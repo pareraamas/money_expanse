@@ -10,6 +10,14 @@ Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangu
 - 🔄 Sinkronisasi data lokal dengan SQLite
 - 🇮🇩 Antarmuka dalam Bahasa Indonesia
 
+## 📥 Download APK
+
+Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
+
+- [app-armeabi-v7a-release.apk](build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk) (15.8MB) - Untuk perangkat lama
+- [app-arm64-v8a-release.apk](build/app/outputs/flutter-apk/app-arm64-v8a-release.apk) (18.1MB) - Untuk perangkat modern (direkomendasikan)
+- [app-x86_64-release.apk](build/app/outputs/flutter-apk/app-x86_64-release.apk) (19.3MB) - Untuk emulator x86
+
 ## 📱 Screenshots
 
 | Beranda | Tambah Pengeluaran | Kategori Pengeluaran |
