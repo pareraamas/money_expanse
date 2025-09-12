@@ -15,10 +15,12 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Tambah Pengeluaran Baru',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: AppColor.gray1, fontWeight: FontWeight.bold, fontSize: 18),
+        title: Obx(
+          () => Text(
+            '${controller.arg.value.isNotEmpty ? "Ubah" : "Tambah"} Pengeluaran Baru',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: AppColor.gray1, fontWeight: FontWeight.bold, fontSize: 18),
+          ),
         ),
         centerTitle: true,
       ),
@@ -139,7 +141,7 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                 ElevatedButton(
                   onPressed: () {
                     if (controller.formKey.currentState!.validate()) {
-                      controller.submitForm();
+                      (controller.arg.isEmpty) ? controller.submitForm() : controller.onUpdateSubmit();
                     }
                   },
                   style: ElevatedButton.styleFrom(

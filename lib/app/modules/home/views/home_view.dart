@@ -79,7 +79,9 @@ class HomeView extends GetView<HomeController> {
               Obx(
                 () => controller.listExpenses.isNotEmpty
                     ? Column(
-                        children: controller.listExpenses.entries.map((entry) => MainTile(date: entry.key, expenses: entry.value)).toList(),
+                        children: controller.listExpenses.entries
+                            .map((entry) => MainTile(date: entry.key, expenses: entry.value, onUpdate: () => controller.onRefresh()))
+                            .toList(),
                       )
                     : Center(
                         child: Padding(

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+
 import 'package:money_expense/app/data/models/expense.dart';
+import 'package:money_expense/app/routes/app_pages.dart';
 import 'package:money_expense/app/theme/app_color.dart';
 import 'package:money_expense/app/ults/date_formatter.dart';
 import 'package:money_expense/app/ults/string_currency_parsing.dart';
 
 class MainTile extends StatelessWidget {
-  const MainTile({super.key, required this.date, required this.expenses});
+  const MainTile({super.key, required this.date, required this.expenses, required this.onUpdate});
 
   final DateTime date;
   final List<Expense> expenses;
+  final VoidCallback onUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +40,11 @@ class MainTile extends StatelessWidget {
               boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4, offset: const Offset(0, 4))],
             ),
             child: ListTile(
+              onTap: () => Get.toNamed(Routes.EXPANSE_CREATE, arguments: expense.id)?.then((value) {
+                if (value == true) {
+                  onUpdate.call();
+                }
+              }),
               leading: SvgPicture.asset(expense.expenseType.icon, color: expense.expenseType.color, width: 24, height: 24),
               title: Text(
                 expense.name,

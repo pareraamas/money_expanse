@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import 'expense_type.dart';
 
 class Expense {
@@ -10,19 +12,13 @@ class Expense {
   const Expense({this.id, required this.name, required this.type, required this.dateTime, required this.price});
 
   // Create Expense with ExpenseType
-  factory Expense.create({String? id, required String name, required ExpenseType type, required DateTime dateTime, required double price}) {
-    return Expense(id: id, name: name, type: type.toShortString(), dateTime: dateTime, price: price);
+  factory Expense.create({required String name, required ExpenseType type, required DateTime dateTime, required double price}) {
+    return Expense(id: Uuid().v4(), name: name, type: type.toShortString(), dateTime: dateTime, price: price);
   }
 
   // Convert Expense to Map for database operations
   Map<String, dynamic> toDbMap() {
-    return {
-      'id': id, 
-      'name': name, 
-      'type': type, 
-      'date_time': dateTime.toIso8601String(), 
-      'price': price
-    };
+    return {'id': id, 'name': name, 'type': type, 'date_time': dateTime.toIso8601String(), 'price': price};
   }
 
   // Create Expense from database map
@@ -52,30 +48,12 @@ class Expense {
 
   // Convert Expense to JSON
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'type': type,
-      'date_time': dateTime.toIso8601String(),
-      'price': price,
-    };
+    return {'id': id, 'name': name, 'type': type, 'date_time': dateTime.toIso8601String(), 'price': price};
   }
 
   // Copy with new values
-  Expense copyWith({
-    String? id,
-    String? name,
-    String? type,
-    DateTime? dateTime,
-    double? price,
-  }) {
-    return Expense(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      type: type ?? this.type,
-      dateTime: dateTime ?? this.dateTime,
-      price: price ?? this.price,
-    );
+  Expense copyWith({String? id, String? name, String? type, DateTime? dateTime, double? price}) {
+    return Expense(id: id ?? this.id, name: name ?? this.name, type: type ?? this.type, dateTime: dateTime ?? this.dateTime, price: price ?? this.price);
   }
 
   @override
@@ -86,20 +64,11 @@ class Expense {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Expense &&
-        other.id == id &&
-        other.name == name &&
-        other.type == type &&
-        other.dateTime == dateTime &&
-        other.price == price;
+    return other is Expense && other.id == id && other.name == name && other.type == type && other.dateTime == dateTime && other.price == price;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        name.hashCode ^
-        type.hashCode ^
-        dateTime.hashCode ^
-        price.hashCode;
+    return id.hashCode ^ name.hashCode ^ type.hashCode ^ dateTime.hashCode ^ price.hashCode;
   }
 }
