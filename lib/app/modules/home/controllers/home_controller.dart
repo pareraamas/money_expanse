@@ -54,10 +54,14 @@ class HomeController extends GetxController {
   }
 
   onGetTotalOutcomeDay() async {
-    final expenses = await _expenseRepository.getExpensesByDateRange(DateTime.now().copyWith(hour: 0, minute: 0), DateTime.now());
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, now.day); // 00:00:00
+    final end = DateTime(now.year, now.month, now.day, 23, 59, 59, 999); // 23:59:59.999
+
+    final expenses = await _expenseRepository.getExpensesByDateRange(start, end);
 
     totalOutcomeDay.value = expenses.fold(0.0, (sum, expense) => sum + expense.price);
-    log("Total Outcome Day: ${totalOutcomeDay.value}");
+    log("Total Outcome Day: ${expenses}");
   }
 
   onGetTotalOutcomeMonth() async {
