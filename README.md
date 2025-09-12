@@ -18,6 +18,7 @@ Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
 - [app-arm64-v8a-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk) (18.1MB) - Untuk perangkat modern (direkomendasikan)
 - [app-x86_64-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-x86_64-release.apk) (19.3MB) - Untuk emulator x86
 
+>Development Dilakukan di Ios, diandroid mungkin akan sedikit berbeda <span style="color: red;">**(perlu diperhatikan)**</span>
 
 ## 📱 Screenshots
 
