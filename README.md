@@ -8,7 +8,6 @@ Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangu
 - 📅 Lihat ringkasan pengeluaran harian dan bulanan
 - 🏷️ Kategorikan pengeluaran untuk analisis yang lebih baik
 - 🔄 Sinkronisasi data lokal dengan SQLite
-- 🌙 Dukungan tema gelap/terang otomatis
 - 🇮🇩 Antarmuka dalam Bahasa Indonesia
 
 ## 📱 Screenshots
@@ -49,6 +48,21 @@ Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangu
    ```bash
    flutter pub get
    ```
+
+3. Generate kode dengan build_runner (jika diperlukan):
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+4. Build APK untuk semua arsitektur:
+   ```bash
+   flutter build apk --split-per-abi 
+   ```
+   
+   File APK akan tersedia di folder `build/app/outputs` dengan format:
+   - `app-armeabi-v7a-release.apk`
+   - `app-arm64-v8a-release.apk`
+   - `app-x86_64-release.apk`
 
 3. Jalankan aplikasi:
    ```bash

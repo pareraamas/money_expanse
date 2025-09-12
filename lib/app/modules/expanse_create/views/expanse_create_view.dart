@@ -34,7 +34,9 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                 TextFormField(
                   style: TextStyle(fontSize: 14, color: AppColor.gray1),
                   controller: controller.nameController,
+                  maxLength: 50,
                   decoration: InputDecoration(
+                    counter: SizedBox.shrink(),
                     labelText: "Nama Pengeluaran",
                     labelStyle: TextStyle(fontSize: 14, color: Color(0xff828282)),
                     border: OutlineInputBorder(
@@ -104,11 +106,13 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
 
                 // Nominal
                 TextFormField(
+                  maxLength: 18,
                   style: TextStyle(fontSize: 14, color: AppColor.gray1),
                   controller: controller.priceController,
 
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
+                    counter: SizedBox.shrink(),
                     labelText: "Nominal",
                     labelStyle: TextStyle(fontSize: 14, color: Color(0xff828282)),
                     border: OutlineInputBorder(

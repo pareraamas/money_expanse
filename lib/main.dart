@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +8,13 @@ import 'app/routes/app_pages.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.white, // background status bar
+      statusBarIconBrightness: Brightness.dark, // icon hitam biar kontras
+      statusBarBrightness: Brightness.light, // utk iOS
+    ),
+  );
 
   runApp(
     GetMaterialApp(
