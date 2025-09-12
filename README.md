@@ -14,9 +14,9 @@ Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangu
 
 Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
 
-- [app-armeabi-v7a-release.apk](https://github.com/pareraamas/money_expense/raw/main/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk) (15.8MB) - Untuk perangkat lama
-- [app-arm64-v8a-release.apk](https://github.com/pareraamas/money_expense/raw/main/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk) (18.1MB) - Untuk perangkat modern (direkomendasikan)
-- [app-x86_64-release.apk](https://github.com/pareraamas/money_expense/raw/main/build/app/outputs/flutter-apk/app-x86_64-release.apk) (19.3MB) - Untuk emulator x86
+- [app-armeabi-v7a-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk) (15.8MB) - Untuk perangkat lama
+- [app-arm64-v8a-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk) (18.1MB) - Untuk perangkat modern (direkomendasikan)
+- [app-x86_64-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-x86_64-release.apk) (19.3MB) - Untuk emulator x86
 
 
 ## 📱 Screenshots
