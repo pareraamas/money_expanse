@@ -31,7 +31,7 @@ class HomeController extends GetxController {
     await onGetListExpenses(DateTime.now().subtract(const Duration(days: 7)), DateTime.now());
     await onGetTotalOutcomeMonth();
     await onGetAllExpenseTypes();
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(Duration(seconds: 2));
     refreshController.refreshCompleted();
     refreshController.resetNoData();
   }
@@ -39,7 +39,7 @@ class HomeController extends GetxController {
   onLoad() async {
     page.value += 1;
     await onGetListExpenses(DateTime.now().subtract(Duration(days: 7 * page.value)), DateTime.now().subtract(Duration(days: 7 * (page.value - 1))));
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(Duration(seconds: 2));
     refreshController.loadComplete();
   }
 

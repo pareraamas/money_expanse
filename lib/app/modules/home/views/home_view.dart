@@ -39,7 +39,7 @@ class HomeView extends GetView<HomeController> {
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 20),
             children: [
-              SizedBox(height: 8),
+              SizedBox(height: 12),
               //Halo, User!
               Text(
                 "Halo, User!",
