@@ -2,7 +2,7 @@ name: money_expense
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -62,14 +62,28 @@ dev_dependencies:
   freezed: ^2.4.9
   json_serializable: ^6.8.0
   flutter_gen_runner: ^5.4.0
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+flutter_native_splash:
+  color: "#46B5A7"
+  android: true
+  ios: true
+  image: assets/logo_splash.png
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_android: "assets/logo.png"
+  image_path_ios: "assets/logo.png"
+  adaptive_icon_background: "#ffffff"
 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
-  
+
   # Assets configuration
   assets:
     - assets/
@@ -78,6 +92,7 @@ flutter:
 flutter_gen:
   output: lib/gen/ # Optional (default: lib/gen/)
   line_length: 80 # Optional line length
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
