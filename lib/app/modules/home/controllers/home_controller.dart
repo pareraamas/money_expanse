@@ -12,6 +12,7 @@ class HomeController extends GetxController {
 
   final totalOutcomeDay = 0.0.obs;
   final totalOutcomeMonth = 0.0.obs;
+  final totalOutcomeYear = 0.0.obs;
   final page = 1.obs;
 
   final expenseTypes = <ExpenseType, double>{}.obs;
@@ -24,13 +25,14 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  onRefresh() async {
-    page.value = 1;
+  void onRefresh() async {
+    page.value = 0;
     listExpenses.clear();
     await onGetTotalOutcomeDay();
-    await onGetListExpenses(DateTime.now().subtract(const Duration(days: 7)), DateTime.now());
+    await onGetListExpenses();
     await onGetTotalOutcomeMonth();
     await onGetAllExpenseTypes();
+    await onGetTotalOutcomeYear();
     await Future.delayed(Duration(seconds: 2));
     refreshController.refreshCompleted();
     refreshController.resetNoData();
@@ -38,7 +40,7 @@ class HomeController extends GetxController {
 
   onLoad() async {
     page.value += 1;
-    await onGetListExpenses(DateTime.now().subtract(Duration(days: 7 * page.value)), DateTime.now().subtract(Duration(days: 7 * (page.value - 1))));
+    await onGetListExpenses();
     await Future.delayed(Duration(seconds: 2));
     refreshController.loadComplete();
   }
@@ -71,8 +73,18 @@ class HomeController extends GetxController {
     log("Total Outcome Month: ${totalOutcomeMonth.value}");
   }
 
-  onGetListExpenses(dateStart, dateEnd) async {
-    final expenses = await _expenseRepository.getExpensesByDateRange(dateStart, dateEnd ?? DateTime.now());
+  onGetTotalOutcomeYear() async {
+    final now = DateTime.now();
+    final start = DateTime(now.year, 1, 1); // January 1st, 00:00:00
+    final end = DateTime(now.year, 12, 31, 23, 59, 59, 999); // December 31st, 23:59:
+    final expenses = await _expenseRepository.getExpensesByDateRange(start, end);
+
+    totalOutcomeYear.value = expenses.fold(0.0, (sum, expense) => sum + expense.price);
+    log("Total Outcome Month: ${totalOutcomeYear.value}");
+  }
+
+  onGetListExpenses() async {
+    final expenses = await _expenseRepository.getExpenses(offset: page.value);
     for (var expense in expenses) {
       final date = DateTime(expense.dateTime.year, expense.dateTime.month, expense.dateTime.day);
       if (listExpenses.containsKey(date)) {

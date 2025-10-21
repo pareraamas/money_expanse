@@ -51,10 +51,12 @@ class HomeView extends GetView<HomeController> {
 
               Obx(
                 () => Row(
+                  mainAxisSize: MainAxisSize.max,
                   spacing: 20,
                   children: [
                     MainCard(title: "Pengeluaranmu\nHari ini", amount: controller.totalOutcomeDay.value, color: AppColor.blue),
                     MainCard(title: "Pengeluaranmu\nBulan ini", amount: controller.totalOutcomeMonth.value, color: AppColor.teal),
+                    // MainCard(title: "Pengeluaranmu\nTahun ini", amount: controller.totalOutcomeYear.value, color: AppColor.teal),
                   ],
                 ),
               ),

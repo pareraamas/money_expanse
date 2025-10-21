@@ -14,9 +14,9 @@ class ExpenseRepository {
     return await _databaseHelper.clearDatabase();
   }
 
-  // Get all expenses
-  Future<List<Expense>> getExpenses() async {
-    return await _databaseHelper.getExpenses();
+  // Get expenses with pagination
+  Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async {
+    return await _databaseHelper.getExpenses(limit: limit, offset: offset);
   }
 
   // Get a single expense by id

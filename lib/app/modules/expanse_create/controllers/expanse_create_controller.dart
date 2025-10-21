@@ -87,12 +87,21 @@ class ExpanseCreateController extends GetxController {
     }
   }
 
+  Future<bool> deleteExpanse() async {
+    try {
+      await repository.deleteExpense(arg.value);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> onUpdateSubmit() async {
     if (formKey.currentState!.validate() && arg.value.isNotEmpty) {
       try {
         // Parse price from formatted Rupiah string
         final price = priceController.text.toDoubleFromRupiah();
-        
+
         // Create updated expense
         final updatedExpense = Expense(
           id: arg.value,
@@ -106,10 +115,10 @@ class ExpanseCreateController extends GetxController {
         await repository.updateExpense(updatedExpense);
 
         log('Updating expense: ${updatedExpense.toDbMap()}');
-        
+
         // Navigate back
         Get.back(result: true);
-        
+
         // Show success message
         Get.snackbar(
           'Berhasil',
@@ -118,16 +127,9 @@ class ExpanseCreateController extends GetxController {
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
-
       } catch (e) {
         log('Error updating expense: $e');
-        Get.snackbar(
-          'Error', 
-          'Gagal memperbarui data: $e',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        Get.snackbar('Error', 'Gagal memperbarui data: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
       }
     }
   }

@@ -16,6 +16,7 @@ class MainCard extends StatelessWidget {
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 14)),

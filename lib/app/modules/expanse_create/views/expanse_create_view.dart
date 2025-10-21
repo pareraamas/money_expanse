@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:money_expense/app/modules/expanse_create/dialogs/dialogs_expanse_type.dart';
+import 'package:money_expense/app/modules/expanse_create/dialogs/dialog_delete_expanse.dart';
+import 'package:money_expense/app/modules/expanse_create/dialogs/dialog_expanse_type.dart';
 import 'package:money_expense/app/modules/expanse_create/widgets/type_widget.dart';
 import 'package:money_expense/app/theme/app_color.dart';
 import 'package:money_expense/app/ults/curency_formatter.dart';
@@ -23,7 +24,43 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          // button delete
+          Obx(() {
+            if (controller.arg.value.isEmpty) return SizedBox();
+            return IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () async {
+                final result = await showDeleteConfirmationDialog(context);
+                if (result == true) {
+                  controller.deleteExpanse().then((value) {
+                    if (value) {
+                      Get.back(result: true);
+                      Get.snackbar(
+                        'Berhasil',
+                        'Data pengeluaran berhasil dihapus',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white,
+                      );
+                    } else {
+                      Get.snackbar(
+                        'Gagal',
+                        'Gagal menghapus data pengeluaran',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                    }
+                  });
+                }
+              },
+            );
+          }),
+          SizedBox(width: 12),
+        ],
       ),
+
       body: Form(
         key: controller.formKey,
         child: SingleChildScrollView(

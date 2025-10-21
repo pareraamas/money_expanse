@@ -57,10 +57,10 @@ class DatabaseHelper {
     return await db.insert(table, expense.toDbMap());
   }
 
-  // Get all expenses
-  Future<List<Expense>> getExpenses() async {
+  // Get all expenses with pagination
+  Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(table, orderBy: '$columnDateTime DESC');
+    List<Map<String, dynamic>> maps = await db.query(table, orderBy: '$columnDateTime DESC', limit: limit, offset: offset * limit);
     return List.generate(maps.length, (i) => Expense.fromDbMap(maps[i]));
   }
 
