@@ -1,21 +1,22 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
+import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeController extends GetxController {
-  final ExpenseRepository _expenseRepository = ExpenseRepository();
+  final ExpenseRepository _expenseRepository = Get.find<ExpenseRepository>();
   late RefreshController refreshController;
 
   final totalOutcomeDay = 0.0.obs;
   final totalOutcomeMonth = 0.0.obs;
-  final totalOutcomeYear = 0.0.obs;
+  final totalIncomeMonth = 0.0.obs;
+  final totalBalance = 0.0.obs;
   final page = 1.obs;
 
-  final expenseTypes = <ExpenseType, double>{}.obs;
+  // Key is category label, value is total amount
+  final expenseTypes = <String, double>{}.obs;
+  final categories = <Category>[].obs;
 
   final listExpenses = <DateTime, List<Expense>>{}.obs;
 
@@ -28,12 +29,11 @@ class HomeController extends GetxController {
   void onRefresh() async {
     page.value = 0;
     listExpenses.clear();
+    await onGetMonthlySummary();
     await onGetTotalOutcomeDay();
+    await _loadCategories();
     await onGetListExpenses();
-    await onGetTotalOutcomeMonth();
     await onGetAllExpenseTypes();
-    await onGetTotalOutcomeYear();
-    await Future.delayed(Duration(seconds: 2));
     refreshController.refreshCompleted();
     refreshController.resetNoData();
   }
@@ -41,46 +41,35 @@ class HomeController extends GetxController {
   onLoad() async {
     page.value += 1;
     await onGetListExpenses();
-    await Future.delayed(Duration(seconds: 2));
     refreshController.loadComplete();
   }
 
-  onGetAllExpenseTypes() async {
-    final expensesByType = await _expenseRepository.getExpensesByType();
-    expenseTypes.clear();
-    for (var type in ExpenseType.values) {
-      expenseTypes[type] = expensesByType[type.name] ?? 0.0;
-    }
+  Future<void> _loadCategories() async {
+    final fetched = await _expenseRepository.getCategories();
+    categories.assignAll(fetched);
+  }
 
-    log("Expense Types: $expenseTypes");
+  onGetAllExpenseTypes() async {
+    final expensesByType = await _expenseRepository.getExpensesByType(transactionType: 'expense');
+    expenseTypes.assignAll(expensesByType);
   }
 
   onGetTotalOutcomeDay() async {
     final now = DateTime.now();
-    final start = DateTime(now.year, now.month, now.day); // 00:00:00
-    final end = DateTime(now.year, now.month, now.day, 23, 59, 59, 999); // 23:59:59.999
+    final start = DateTime(now.year, now.month, now.day);
+    final end = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
 
-    final expenses = await _expenseRepository.getExpensesByDateRange(start, end);
-
-    totalOutcomeDay.value = expenses.fold(0.0, (sum, expense) => sum + expense.price);
-    log("Total Outcome Day: ${expenses}");
+    totalOutcomeDay.value = await _expenseRepository.getTotalAmount(start, end, 'expense');
   }
 
-  onGetTotalOutcomeMonth() async {
-    final expenses = await _expenseRepository.getExpensesForMonth(DateTime(DateTime.now().year, DateTime.now().month, 1));
-
-    totalOutcomeMonth.value = expenses.fold(0.0, (sum, expense) => sum + expense.price);
-    log("Total Outcome Month: ${totalOutcomeMonth.value}");
-  }
-
-  onGetTotalOutcomeYear() async {
+  onGetMonthlySummary() async {
     final now = DateTime.now();
-    final start = DateTime(now.year, 1, 1); // January 1st, 00:00:00
-    final end = DateTime(now.year, 12, 31, 23, 59, 59, 999); // December 31st, 23:59:
-    final expenses = await _expenseRepository.getExpensesByDateRange(start, end);
-
-    totalOutcomeYear.value = expenses.fold(0.0, (sum, expense) => sum + expense.price);
-    log("Total Outcome Month: ${totalOutcomeYear.value}");
+    totalOutcomeMonth.value = await _expenseRepository.getMonthlyTotal(now, 'expense');
+    totalIncomeMonth.value = await _expenseRepository.getMonthlyTotal(now, 'income');
+    
+    final allIncome = await _expenseRepository.getTotalAmount(DateTime(2000), DateTime(2100), 'income');
+    final allExpense = await _expenseRepository.getTotalAmount(DateTime(2000), DateTime(2100), 'expense');
+    totalBalance.value = allIncome - allExpense;
   }
 
   onGetListExpenses() async {
@@ -88,12 +77,13 @@ class HomeController extends GetxController {
     for (var expense in expenses) {
       final date = DateTime(expense.dateTime.year, expense.dateTime.month, expense.dateTime.day);
       if (listExpenses.containsKey(date)) {
-        listExpenses[date]!.add(expense);
+        if (!listExpenses[date]!.any((e) => e.id == expense.id)) {
+          listExpenses[date]!.add(expense);
+        }
       } else {
         listExpenses[date] = [expense];
       }
     }
-    log("List Expenses: $listExpenses");
   }
 
   @override

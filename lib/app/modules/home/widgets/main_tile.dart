@@ -45,14 +45,29 @@ class MainTile extends StatelessWidget {
                   onUpdate.call();
                 }
               }),
-              leading: SvgPicture.asset(expense.expenseType.icon, color: expense.expenseType.color, width: 24, height: 24),
+              leading: SvgPicture.asset(
+                expense.category?.icon ?? "assets/svg/shopping-bag.svg",
+                color: expense.category?.color ?? Colors.grey,
+                width: 24,
+                height: 24,
+              ),
               title: Text(
                 expense.name,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400, fontSize: 14, color: AppColor.gray1),
               ),
-              trailing: Text(
-                expense.price.toRupiahString(),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold, fontSize: 14, color: AppColor.gray1),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "${expense.transactionType == 'income' ? '+' : '-'} ${expense.price.toRupiahString()}",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: expense.transactionType == 'income' ? Colors.green : AppColor.gray1,
+                        ),
+                  ),
+                ],
               ),
             ),
           ),

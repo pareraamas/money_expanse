@@ -64,20 +64,75 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
       body: Form(
         key: controller.formKey,
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Obx(
             () => Column(
               spacing: 18,
               children: [
+                // Transaction Type Toggle
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColor.gray5,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.transactionType.value = 'expense',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: controller.transactionType.value == 'expense' ? Colors.redAccent : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Pengeluaran",
+                              style: TextStyle(
+                                color: controller.transactionType.value == 'expense' ? Colors.white : AppColor.gray3,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.transactionType.value = 'income',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: controller.transactionType.value == 'income' ? AppColor.teal : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Pemasukan",
+                              style: TextStyle(
+                                color: controller.transactionType.value == 'income' ? Colors.white : AppColor.gray3,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 // Name
                 TextFormField(
                   style: TextStyle(fontSize: 14, color: AppColor.gray1),
                   controller: controller.nameController,
                   maxLength: 50,
                   decoration: InputDecoration(
-                    counter: SizedBox.shrink(),
-                    labelText: "Nama Pengeluaran",
-                    labelStyle: TextStyle(fontSize: 14, color: Color(0xff828282)),
+                    counter: const SizedBox.shrink(),
+                    labelText: "Keterangan",
+                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColor.borderTextInput),
                       borderRadius: BorderRadius.circular(6),
@@ -88,20 +143,20 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                     ),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                   ),
-                  validator: (value) => value == null || value.isEmpty ? "masukan nama pengeluaran" : null,
+                  validator: (value) => value == null || value.isEmpty ? "masukan keterangan" : null,
                 ),
 
-                // Type
+                // Type (Category)
                 TypeWidget(
                   controller: controller.typeController,
-                  label: "Type",
-                  iconPath: controller.expenseType.value.icon,
-                  iconColor: controller.expenseType.value.color,
+                  label: "Kategori",
+                  iconPath: controller.selectedCategory.value?.icon ?? "",
+                  iconColor: controller.selectedCategory.value?.color ?? Colors.grey,
                   readOnly: true,
                   onTap: () async {
-                    final data = await dialogExpanseType(context);
+                    final data = await dialogExpanseType(context, controller.categories);
                     if (data != null) {
-                      controller.expenseType.value = data;
+                      controller.selectedCategory.value = data;
                       controller.typeController.text = data.label;
                     }
                   },
@@ -118,8 +173,8 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                   readOnly: true,
                   style: TextStyle(fontSize: 14, color: AppColor.gray1),
                   decoration: InputDecoration(
-                    labelText: "Tanggal Pengeluaran",
-                    labelStyle: TextStyle(fontSize: 14, color: Color(0xff828282)),
+                    labelText: "Tanggal",
+                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColor.borderTextInput),
                       borderRadius: BorderRadius.circular(6),
@@ -128,7 +183,7 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                       borderSide: BorderSide(color: AppColor.borderTextInput),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    suffixIcon: Icon(Icons.calendar_month_outlined, color: Color(0xffBDBDBD)),
+                    suffixIcon: const Icon(Icons.calendar_month_outlined, color: Color(0xffBDBDBD)),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                   ),
                   onTap: () async {
@@ -148,12 +203,11 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                   maxLength: 18,
                   style: TextStyle(fontSize: 14, color: AppColor.gray1),
                   controller: controller.priceController,
-
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    counter: SizedBox.shrink(),
+                    counter: const SizedBox.shrink(),
                     labelText: "Nominal",
-                    labelStyle: TextStyle(fontSize: 14, color: Color(0xff828282)),
+                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColor.borderTextInput),
                       borderRadius: BorderRadius.circular(6),
@@ -183,7 +237,7 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.primary,
-                    minimumSize: Size(double.infinity, 48),
+                    minimumSize: const Size(double.infinity, 48),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                   ),
                   child: Text(

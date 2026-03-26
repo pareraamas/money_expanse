@@ -4,6 +4,8 @@ import '../modules/expanse_create/bindings/expanse_create_binding.dart';
 import '../modules/expanse_create/views/expanse_create_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/category_create/bindings/category_create_binding.dart';
+import '../modules/category_create/views/category_create_view.dart';
 
 part 'app_routes.dart';
 
@@ -15,5 +17,6 @@ class AppPages {
   static final routes = [
     GetPage(name: _Paths.HOME, page: () => const HomeView(), binding: HomeBinding()),
     GetPage(name: _Paths.EXPANSE_CREATE, page: () => const ExpanseCreateView(), binding: ExpanseCreateBinding()),
+    GetPage(name: _Paths.CATEGORY_CREATE, page: () => const CategoryCreateView(), binding: CategoryCreateBinding()),
   ];
 }

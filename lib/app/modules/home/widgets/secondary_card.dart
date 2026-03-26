@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/theme/app_color.dart';
 import 'package:money_expense/app/ults/string_currency_parsing.dart';
 
 class SecondaryCard extends StatelessWidget {
-  const SecondaryCard({super.key, required this.amount, required this.type});
+  const SecondaryCard({
+    super.key,
+    required this.amount,
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
 
-  final ExpenseType type;
+  final String label;
+  final String icon;
+  final Color color;
   final double amount;
 
   @override
@@ -15,8 +22,8 @@ class SecondaryCard extends StatelessWidget {
     return Container(
       width: 110,
       height: 110,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(right: 12),
       clipBehavior: Clip.none,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -26,7 +33,7 @@ class SecondaryCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -36,12 +43,20 @@ class SecondaryCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 14,
-            backgroundColor: type.color,
-            child: SvgPicture.asset(type.icon, color: Colors.white, width: 20, height: 20),
+            backgroundColor: color,
+            child: SvgPicture.asset(icon, color: Colors.white, width: 20, height: 20),
           ),
-          Text(type.label, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColor.gray3, fontSize: 12)),
-          SizedBox(height: 5),
-          Text(amount.toRupiahString(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold, fontSize: 12)),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColor.gray3, fontSize: 12),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            amount.toRupiahString(),
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
         ],
       ),
     );

@@ -36,7 +36,13 @@ class TypeWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Prefix (icon)
-            SvgPicture.asset(iconPath, color: iconColor, width: 24, height: 24),
+            iconPath.isNotEmpty
+                ? SvgPicture.asset(iconPath, color: iconColor, width: 24, height: 24)
+                : Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(color: iconColor.withOpacity(0.2), shape: BoxShape.circle),
+                  ),
             const SizedBox(width: 8),
 
             // Expanded TextField

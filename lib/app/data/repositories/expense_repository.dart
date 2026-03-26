@@ -1,5 +1,6 @@
 import 'package:money_expense/app/data/local/database_helper.dart';
 import 'package:money_expense/app/data/models/expense.dart';
+import 'package:money_expense/app/data/models/category_model.dart';
 
 class ExpenseRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -35,37 +36,41 @@ class ExpenseRepository {
   }
 
   // Get expenses by date range
-  Future<List<Expense>> getExpensesByDateRange(DateTime start, DateTime end) async {
-    return await _databaseHelper.getExpensesByDateRange(start, end);
+  Future<List<Expense>> getExpensesByDateRange(DateTime start, DateTime end, {String? transactionType}) async {
+    return await _databaseHelper.getExpensesByDateRange(start, end, transactionType: transactionType);
   }
 
   // Get total expenses by type
-  Future<Map<String, double>> getExpensesByType() async {
-    return await _databaseHelper.getExpensesByType();
+  Future<Map<String, double>> getExpensesByType({String transactionType = 'expense'}) async {
+    return await _databaseHelper.getExpensesByType(transactionType: transactionType);
   }
 
-  // Get total expenses amount
-  // Future<double> getTotalExpenses() async {
-  //   final expenses = await _databaseHelper.getExpenses();
-  //   return expenses.fold(0, (sum, expense) => sum + expense.nominal);
-  // }
+  // Get total amount for a date range and type
+  Future<double> getTotalAmount(DateTime start, DateTime end, String transactionType) async {
+    return await _databaseHelper.getTotalAmountByDateRange(start, end, transactionType);
+  }
 
   // Get expenses for a specific month
-  Future<List<Expense>> getExpensesForMonth(DateTime month) {
+  Future<List<Expense>> getExpensesForMonth(DateTime month, {String? transactionType}) {
     final firstDay = DateTime(month.year, month.month, 1);
     final lastDay = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
-    return _databaseHelper.getExpensesByDateRange(firstDay, lastDay);
+    return _databaseHelper.getExpensesByDateRange(firstDay, lastDay, transactionType: transactionType);
   }
 
-  // Get total expenses for a specific month
-  Future<Map<String, double>> getMonthlyExpensesByType(DateTime month) async {
-    final expenses = await getExpensesForMonth(month);
-    final result = <String, double>{};
+  // Get monthly summary
+  Future<double> getMonthlyTotal(DateTime month, String transactionType) async {
+    final firstDay = DateTime(month.year, month.month, 1);
+    final lastDay = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+    return _databaseHelper.getTotalAmountByDateRange(firstDay, lastDay, transactionType);
+  }
 
-    for (var expense in expenses) {
-      result.update(expense.type, (value) => value + expense.price, ifAbsent: () => expense.price);
-    }
+  // --- Category Methods ---
 
-    return result;
+  Future<List<Category>> getCategories() async {
+    return await _databaseHelper.getCategories();
+  }
+
+  Future<int> insertCategory(Category category) async {
+    return await _databaseHelper.insertCategory(category);
   }
 }

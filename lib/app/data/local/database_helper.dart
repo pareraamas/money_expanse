@@ -2,27 +2,36 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:money_expense/app/data/models/expense.dart';
+import 'package:money_expense/app/data/models/category_model.dart';
+import 'package:money_expense/app/data/models/expense_type.dart';
 import 'dart:io';
 
 class DatabaseHelper {
   static const _databaseName = 'expense_database.db';
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 3; // Incremented for categories table
 
-  // Table name
-  static const table = 'expenses';
+  // Table names
+  static const tableExpenses = 'expenses';
+  static const tableCategories = 'categories';
 
-  // Column names
+  // Expense Column names
   static const columnId = 'id';
   static const columnName = 'name';
-  static const columnType = 'type';
+  static const columnType = 'type'; // References Category ID
+  static const columnTransactionType = 'transaction_type';
   static const columnDateTime = 'date_time';
   static const columnPrice = 'price';
+
+  // Category Column names
+  static const catId = 'id';
+  static const catLabel = 'label';
+  static const catColor = 'color_value';
+  static const catIcon = 'icon';
 
   // Make this a singleton class
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  // Only allow a single open connection to the database
   static Database? _database;
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -30,91 +39,194 @@ class DatabaseHelper {
     return _database!;
   }
 
-  // Open the database and create it if it doesn't exist
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
 
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
-  // Create the database table
   Future<void> _onCreate(Database db, int version) async {
+    // Create Categories table first
     await db.execute('''
-      CREATE TABLE $table (
+      CREATE TABLE $tableCategories (
+        $catId TEXT PRIMARY KEY,
+        $catLabel TEXT NOT NULL,
+        $catColor INTEGER NOT NULL,
+        $catIcon TEXT NOT NULL
+      )
+    ''');
+
+    // Create Expenses table
+    await db.execute('''
+      CREATE TABLE $tableExpenses (
         $columnId TEXT PRIMARY KEY,
         $columnName TEXT NOT NULL,
         $columnType TEXT NOT NULL,
+        $columnTransactionType TEXT NOT NULL DEFAULT 'expense',
         $columnDateTime TEXT NOT NULL,
         $columnPrice REAL NOT NULL
       )
     ''');
+
+    // Seed default categories
+    for (var type in ExpenseType.values) {
+      await db.insert(tableCategories, {
+        'id': type.toShortString().toLowerCase(), // Use enum name as ID for migration compatibility
+        'label': type.label,
+        'color_value': type.color.value,
+        'icon': type.icon,
+      });
+    }
   }
 
-  // Insert an expense into the database
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 3) {
+      // Recreate everything for version 3
+      await db.execute('DROP TABLE IF EXISTS $tableExpenses');
+      await db.execute('DROP TABLE IF EXISTS $tableCategories');
+      await _onCreate(db, newVersion);
+    }
+  }
+
+  // --- Category Methods ---
+
+  Future<List<Category>> getCategories() async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(tableCategories);
+    return List.generate(maps.length, (i) => Category.fromMap(maps[i]));
+  }
+
+  Future<int> insertCategory(Category category) async {
+    Database db = await database;
+    return await db.insert(tableCategories, category.toMap());
+  }
+
+  // --- Expense Methods ---
+
   Future<int> insertExpense(Expense expense) async {
     Database db = await database;
-    return await db.insert(table, expense.toDbMap());
+    return await db.insert(tableExpenses, expense.toDbMap());
   }
 
-  // Get all expenses with pagination
   Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(table, orderBy: '$columnDateTime DESC', limit: limit, offset: offset * limit);
-    return List.generate(maps.length, (i) => Expense.fromDbMap(maps[i]));
+    List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT e.*, c.label as cat_label, c.color_value as cat_color, c.icon as cat_icon
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      ORDER BY e.$columnDateTime DESC
+      LIMIT ? OFFSET ?
+    ''', [limit, offset * limit]);
+    
+    return List.generate(maps.length, (i) {
+      final map = maps[i];
+      final category = Category(
+        id: map[columnType] as String,
+        label: map['cat_label'] as String,
+        colorValue: map['cat_color'] as int,
+        icon: map['cat_icon'] as String,
+      );
+      return Expense.fromDbMap(map).copyWith(category: category);
+    });
   }
 
-  // Get a single expense by id
   Future<Expense?> getExpense(String id) async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(table, where: '$columnId = ?', whereArgs: [id], limit: 1);
+    List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT e.*, c.label as cat_label, c.color_value as cat_color, c.icon as cat_icon
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      WHERE e.$columnId = ?
+    ''', [id]);
+
     if (maps.isNotEmpty) {
-      return Expense.fromDbMap(maps.first);
+      final map = maps.first;
+      final category = Category(
+        id: map[columnType] as String,
+        label: map['cat_label'] as String,
+        colorValue: map['cat_color'] as int,
+        icon: map['cat_icon'] as String,
+      );
+      return Expense.fromDbMap(map).copyWith(category: category);
     }
     return null;
   }
 
-  // Update an expense
   Future<int> updateExpense(Expense expense) async {
     Database db = await database;
-    return await db.update(table, expense.toDbMap(), where: '$columnId = ?', whereArgs: [expense.id]);
+    return await db.update(tableExpenses, expense.toDbMap(), where: '$columnId = ?', whereArgs: [expense.id]);
   }
 
-  // Delete an expense
   Future<int> deleteExpense(String id) async {
     Database db = await database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(tableExpenses, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  // Get expenses by date range
-  Future<List<Expense>> getExpensesByDateRange(DateTime start, DateTime end) async {
+  Future<List<Expense>> getExpensesByDateRange(DateTime start, DateTime end, {String? transactionType}) async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(
-      table,
-      where: '$columnDateTime BETWEEN ? AND ?',
-      whereArgs: [start.toIso8601String(), end.toIso8601String()],
-      orderBy: '$columnDateTime DESC',
-    );
-    return List.generate(maps.length, (i) => Expense.fromDbMap(maps[i]));
+    String whereClause = 'e.$columnDateTime BETWEEN ? AND ?';
+    List<dynamic> whereArgs = [start.toIso8601String(), end.toIso8601String()];
+
+    if (transactionType != null) {
+      whereClause += ' AND e.$columnTransactionType = ?';
+      whereArgs.add(transactionType);
+    }
+
+    List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT e.*, c.label as cat_label, c.color_value as cat_color, c.icon as cat_icon
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      WHERE $whereClause
+      ORDER BY e.$columnDateTime DESC
+    ''', whereArgs);
+
+    return List.generate(maps.length, (i) {
+      final map = maps[i];
+      final category = Category(
+        id: map[columnType] as String,
+        label: map['cat_label'] as String,
+        colorValue: map['cat_color'] as int,
+        icon: map['cat_icon'] as String,
+      );
+      return Expense.fromDbMap(map).copyWith(category: category);
+    });
   }
 
-  // Get total expenses by type
-  Future<Map<String, double>> getExpensesByType() async {
+  // Get total expenses by category label (using join)
+  Future<Map<String, double>> getExpensesByType({String transactionType = 'expense'}) async {
     Database db = await database;
     List<Map<String, dynamic>> result = await db.rawQuery('''
-      SELECT $columnType, SUM($columnPrice) as total
-      FROM $table
-      GROUP BY $columnType
-    ''');
+      SELECT c.$catLabel as category_label, SUM(e.$columnPrice) as total
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      WHERE e.$columnTransactionType = ?
+      GROUP BY c.$catLabel
+    ''', [transactionType]);
 
     Map<String, double> expensesByType = {};
     for (var row in result) {
-      expensesByType[row[columnType] as String] = row['total'] as double;
+      expensesByType[row['category_label'] as String] = row['total'] as double;
     }
     return expensesByType;
   }
 
-  // Close the database connection
+  Future<double> getTotalAmountByDateRange(DateTime start, DateTime end, String transactionType) async {
+    Database db = await database;
+    List<Map<String, dynamic>> result = await db.rawQuery('''
+      SELECT SUM($columnPrice) as total
+      FROM $tableExpenses
+      WHERE $columnTransactionType = ? AND $columnDateTime BETWEEN ? AND ?
+    ''', [transactionType, start.toIso8601String(), end.toIso8601String()]);
+    
+    return result.first['total'] as double? ?? 0.0;
+  }
+
   Future<void> close() async {
     final db = await database;
     await db.close();
@@ -122,6 +234,7 @@ class DatabaseHelper {
 
   Future<int> clearDatabase() async {
     Database db = await database;
-    return await db.delete(table);
+    await db.delete(tableExpenses);
+    return await db.delete(tableCategories);
   }
 }

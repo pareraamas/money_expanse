@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_expense/app/theme/app_color.dart';
 import 'app/routes/app_pages.dart';
+import 'app/bindings/initial_binding.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,7 @@ void main() {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       initialRoute: AppPages.INITIAL,
+      initialBinding: InitialBinding(),
       theme: ThemeData(
         textTheme: GoogleFonts.sourceSans3TextTheme(),
         colorScheme: ColorScheme.fromSeed(
