@@ -63,12 +63,15 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
 
       body: Form(
         key: controller.formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          child: Obx(
-            () => Column(
-              spacing: 18,
-              children: [
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              sliver: SliverToBoxAdapter(
+                child: Obx(
+                  () => Column(
+                    spacing: 18,
+                    children: [
                 // Transaction Type Toggle
                 Container(
                   padding: const EdgeInsets.all(4),
@@ -245,9 +248,12 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ],
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

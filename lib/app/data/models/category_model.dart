@@ -42,8 +42,21 @@ class Category {
     return Category(
       id: const Uuid().v4(),
       label: label,
-      colorValue: color.value,
+      colorValue: color.toARGB32(),
       icon: icon,
+    );
+  }
+
+  Category copyWith({
+    String? label,
+    Color? color,
+    String? icon,
+  }) {
+    return Category(
+      id: id,
+      label: label ?? this.label,
+      colorValue: color?.toARGB32() ?? colorValue,
+      icon: icon ?? this.icon,
     );
   }
 }

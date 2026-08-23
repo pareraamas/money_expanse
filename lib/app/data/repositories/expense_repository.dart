@@ -1,6 +1,7 @@
 import 'package:money_expense/app/data/local/database_helper.dart';
 import 'package:money_expense/app/data/models/expense.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
+import 'package:money_expense/app/data/models/budget_model.dart';
 
 class ExpenseRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -72,5 +73,41 @@ class ExpenseRepository {
 
   Future<int> insertCategory(Category category) async {
     return await _databaseHelper.insertCategory(category);
+  }
+
+  Future<int> updateCategory(Category category) async {
+    return await _databaseHelper.updateCategory(category);
+  }
+
+  Future<int> countExpensesByCategory(String categoryId) async {
+    return await _databaseHelper.countExpensesByCategory(categoryId);
+  }
+
+  Future<int> deleteCategory(String categoryId) async {
+    return await _databaseHelper.deleteCategory(categoryId);
+  }
+
+  // --- Budget Methods ---
+
+  // Get amount spent per category id for the given month (defaults to 'expense' transactions)
+  Future<Map<String, double>> getCategorySpendingForMonth(DateTime month, {String transactionType = 'expense'}) async {
+    final firstDay = DateTime(month.year, month.month, 1);
+    final lastDay = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+    return _databaseHelper.getSpendingByCategoryForRange(firstDay, lastDay, transactionType: transactionType);
+  }
+
+  // Get all budgets set for the given month
+  Future<List<Budget>> getBudgetsForMonth(DateTime month) async {
+    return _databaseHelper.getBudgetsForMonth(Budget.yearMonthOf(month));
+  }
+
+  // Set (create or update) the budget for a category in the given month
+  Future<void> setBudget(String categoryId, DateTime month, double amount) async {
+    return _databaseHelper.setBudget(categoryId, Budget.yearMonthOf(month), amount);
+  }
+
+  // Remove the budget for a category in the given month
+  Future<int> deleteBudget(String categoryId, DateTime month) async {
+    return _databaseHelper.deleteBudget(categoryId, Budget.yearMonthOf(month));
   }
 }

@@ -35,39 +35,43 @@ class MainTile extends StatelessWidget {
             alignment: Alignment.center,
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4, offset: const Offset(0, 4))],
+            ),
+            child: Material(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4, offset: const Offset(0, 4))],
-            ),
-            child: ListTile(
-              onTap: () => Get.toNamed(Routes.EXPANSE_CREATE, arguments: expense.id)?.then((value) {
-                if (value == true) {
-                  onUpdate.call();
-                }
-              }),
-              leading: SvgPicture.asset(
-                expense.category?.icon ?? "assets/svg/shopping-bag.svg",
-                color: expense.category?.color ?? Colors.grey,
-                width: 24,
-                height: 24,
-              ),
-              title: Text(
-                expense.name,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400, fontSize: 14, color: AppColor.gray1),
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "${expense.transactionType == 'income' ? '+' : '-'} ${expense.price.toRupiahString()}",
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: expense.transactionType == 'income' ? Colors.green : AppColor.gray1,
-                        ),
-                  ),
-                ],
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                onTap: () => Get.toNamed(Routes.EXPANSE_CREATE, arguments: expense.id)?.then((value) {
+                  if (value == true) {
+                    onUpdate.call();
+                  }
+                }),
+                leading: SvgPicture.asset(
+                  expense.category?.icon ?? "assets/svg/shopping-bag.svg",
+                  colorFilter: ColorFilter.mode(expense.category?.color ?? Colors.grey, BlendMode.srcIn),
+                  width: 24,
+                  height: 24,
+                ),
+                title: Text(
+                  expense.name,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400, fontSize: 14, color: AppColor.gray1),
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "${expense.transactionType == 'income' ? '+' : '-'} ${expense.price.toRupiahString()}",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: expense.transactionType == 'income' ? Colors.green : AppColor.gray1,
+                          ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

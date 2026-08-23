@@ -12,9 +12,9 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Buat Kategori Baru',
-          style: TextStyle(
+        title: Text(
+          controller.isEditing ? 'Edit Kategori' : 'Buat Kategori Baru',
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -23,12 +23,20 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          if (controller.isEditing)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: () => _confirmDelete(context),
+            ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(24.0),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
             // Label input
             const Text(
               'Nama Kategori',
@@ -73,7 +81,7 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
               () => Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: controller.availableColors.map((color) {
+                children: CategoryCreateController.availableColors.map((color) {
                   final isSelected = controller.selectedColor.value == color;
                   return GestureDetector(
                     onTap: () => controller.selectColor(color),
@@ -121,18 +129,20 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
               ),
             ),
             const SizedBox(height: 12),
-            Obx(
-              () => GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: controller.availableIcons.length,
-                itemBuilder: (context, index) {
-                  final iconPath = controller.availableIcons[index];
+              ]),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final iconPath = CategoryCreateController.availableIcons[index];
                   return Obx(() {
                     final isSelected =
                         controller.selectedIcon.value == iconPath;
@@ -171,10 +181,12 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
                     );
                   });
                 },
+                childCount: CategoryCreateController.availableIcons.length,
               ),
             ),
-          ],
-        ),
+          ),
+          SliverPadding(padding: const EdgeInsets.only(bottom: 24.0), sliver: SliverToBoxAdapter(child: const SizedBox.shrink())),
+        ],
       ),
       bottomNavigationBar: Obx(
         () => Container(
@@ -210,9 +222,9 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
                       strokeWidth: 2,
                     ),
                   )
-                : const Text(
-                    'Simpan Kategori',
-                    style: TextStyle(
+                : Text(
+                    controller.isEditing ? 'Perbarui Kategori' : 'Simpan Kategori',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -222,5 +234,26 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Kategori'),
+        content: const Text('Yakin ingin menghapus kategori ini?'),
+        actions: [
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await controller.deleteCategory();
+    }
   }
 }

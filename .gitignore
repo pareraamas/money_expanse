@@ -33,30 +33,18 @@ migrate_working_dir/
 # /build/
 /coverage/
 
-# Flutter build outputs
-build/app/kotlin/
-build/app/intermediates/
-build/app/generated/
-build/app/tmp/
-build/app/kotlinToolingMetadata
-build/app/outputs/apk
-build/app/outputs/logs
-build/app/outputs/mapping
-build/app/outputs/native-debug-symbols
-build/app/outputs/sdk-dependencies
-
+# Flutter build outputs — keep only build/app/outputs/flutter-apk, ignore the rest
+/build/*
+!/build/app/
+/build/app/*
+!/build/app/outputs/
+/build/app/outputs/*
+!/build/app/outputs/flutter-apk/
 
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-
-/build/ios
-/build/native_assets
-/build/path_provider_android
-/build/reports
-/build/sqflite_android
-/build/b9dbe592fc2ae558329e0a126bb30b5a.cache.dill.track.dill
-/build/5e4978eeb1ff72f74a6c1100f7e3ab6b
-/build/.cxx
+/android/build/
+/android/app/build/
+/android/.gradle/

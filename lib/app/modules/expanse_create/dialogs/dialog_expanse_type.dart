@@ -40,7 +40,16 @@ Future<Category?> dialogExpanseType(
                       color: AppColor.gray1,
                     ),
                   ),
-                  const CloseButton(),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.settings_outlined, color: AppColor.gray2),
+                        tooltip: 'Kelola Kategori',
+                        onPressed: () => Get.toNamed('/category-list'),
+                      ),
+                      const CloseButton(),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -102,7 +111,7 @@ Future<Category?> dialogExpanseType(
                           radius: 28,
                           child: SvgPicture.asset(
                             item.icon,
-                            color: Colors.white,
+                            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                             width: 24,
                             height: 24,
                           ),

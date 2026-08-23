@@ -37,11 +37,11 @@ class TypeWidget extends StatelessWidget {
           children: [
             // Prefix (icon)
             iconPath.isNotEmpty
-                ? SvgPicture.asset(iconPath, color: iconColor, width: 24, height: 24)
+                ? SvgPicture.asset(iconPath, colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn), width: 24, height: 24)
                 : Container(
                     width: 24,
                     height: 24,
-                    decoration: BoxDecoration(color: iconColor.withOpacity(0.2), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.2), shape: BoxShape.circle),
                   ),
             const SizedBox(width: 8),
 
@@ -55,7 +55,7 @@ class TypeWidget extends StatelessWidget {
 
             const SizedBox(width: 8),
             // Suffix (opsional)
-            if (suffix != null) suffix!,
+            ?suffix,
           ],
         ),
       ),

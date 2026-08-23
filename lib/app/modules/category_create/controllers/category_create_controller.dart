@@ -1,26 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
+import 'package:money_expense/gen/assets.gen.dart';
 
 class CategoryCreateController extends GetxController {
   final labelController = TextEditingController();
 
-  final availableColors = ExpenseType.values.map((e) => e.color).toList().obs;
-  final availableIcons = ExpenseType.values.map((e) => e.icon).toList().obs;
+  static const availableColors = <Color>[
+    Color(0xfff2c94c),
+    Color(0xff56CCF2),
+    Color(0xffF2994A),
+    Color(0xffEB5757),
+    Color(0xff9B51E0),
+    Color(0xff27AE60),
+    Color(0xffBB6BD9),
+    Color(0xff2D9CDB),
+    Color(0xff2F80ED),
+  ];
+
+  static const availableIcons = <String>[
+    Assets.uilPizzaSlice,
+    Assets.uilRssAlt,
+    Assets.uilBookOpen,
+    Assets.uilGift,
+    Assets.uilCarSideview,
+    Assets.uilShoppingCart,
+    Assets.uilHome,
+    Assets.uilBasketball,
+    Assets.uilClapperBoard,
+  ];
 
   late final Rx<Color> selectedColor;
   late final RxString selectedIcon;
 
   final isLoading = false.obs;
-  final ExpenseRepository _repository = ExpenseRepository();
+  final ExpenseRepository _repository = Get.find<ExpenseRepository>();
+
+  Category? editingCategory;
+  bool get isEditing => editingCategory != null;
 
   @override
   void onInit() {
     super.onInit();
-    selectedColor = availableColors.first.obs;
-    selectedIcon = availableIcons.first.obs;
+    final arg = Get.arguments;
+    if (arg is Category) {
+      editingCategory = arg;
+      labelController.text = arg.label;
+      selectedColor = arg.color.obs;
+      selectedIcon = arg.icon.obs;
+    } else {
+      selectedColor = availableColors.first.obs;
+      selectedIcon = availableIcons.first.obs;
+    }
   }
 
   @override
@@ -52,18 +84,27 @@ class CategoryCreateController extends GetxController {
 
     try {
       isLoading.value = true;
-      final newCategory = Category.create(
-        label: labelController.text.trim(),
-        color: selectedColor.value,
-        icon: selectedIcon.value,
-      );
 
-      await _repository.insertCategory(newCategory);
+      if (isEditing) {
+        final updatedCategory = editingCategory!.copyWith(
+          label: labelController.text.trim(),
+          color: selectedColor.value,
+          icon: selectedIcon.value,
+        );
+        await _repository.updateCategory(updatedCategory);
+      } else {
+        final newCategory = Category.create(
+          label: labelController.text.trim(),
+          color: selectedColor.value,
+          icon: selectedIcon.value,
+        );
+        await _repository.insertCategory(newCategory);
+      }
 
       Get.back(result: true);
       Get.snackbar(
         'Sukses',
-        'Kategori berhasil ditambahkan',
+        isEditing ? 'Kategori berhasil diperbarui' : 'Kategori berhasil ditambahkan',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -71,7 +112,46 @@ class CategoryCreateController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Gagal menambahkan kategori. Silakan coba lagi.',
+        'Gagal menyimpan kategori. Silakan coba lagi.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteCategory() async {
+    if (!isEditing) return;
+
+    try {
+      isLoading.value = true;
+      final usageCount = await _repository.countExpensesByCategory(editingCategory!.id);
+      if (usageCount > 0) {
+        Get.snackbar(
+          'Tidak Bisa Dihapus',
+          'Kategori ini masih digunakan oleh $usageCount transaksi',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await _repository.deleteCategory(editingCategory!.id);
+      Get.back(result: true);
+      Get.snackbar(
+        'Sukses',
+        'Kategori berhasil dihapus',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus kategori. Silakan coba lagi.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,

@@ -30,7 +30,7 @@ class SecondaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -44,7 +44,7 @@ class SecondaryCard extends StatelessWidget {
           CircleAvatar(
             radius: 14,
             backgroundColor: color,
-            child: SvgPicture.asset(icon, color: Colors.white, width: 20, height: 20),
+            child: SvgPicture.asset(icon, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn), width: 20, height: 20),
           ),
           Text(
             label,
