@@ -48,29 +48,33 @@ class BudgetView extends GetView<BudgetController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _SummaryCard(controller: controller)),
-            if (controller.categories.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: Text('Belum ada kategori')),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.all(16),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index.isOdd) return const SizedBox(height: 12);
-                      final category = controller.categories[index ~/ 2];
-                      return _CategoryBudgetTile(category: category, controller: controller);
-                    },
-                    childCount: controller.categories.length * 2 - 1,
+        return RefreshIndicator(
+          onRefresh: controller.loadData,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(child: _SummaryCard(controller: controller)),
+              if (controller.categories.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: Text('Belum ada kategori')),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        if (index.isOdd) return const SizedBox(height: 12);
+                        final category = controller.categories[index ~/ 2];
+                        return _CategoryBudgetTile(category: category, controller: controller);
+                      },
+                      childCount: controller.categories.length * 2 - 1,
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         );
       }),
     );

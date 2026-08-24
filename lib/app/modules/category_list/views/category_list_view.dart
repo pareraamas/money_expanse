@@ -28,35 +28,42 @@ class CategoryListView extends GetView<CategoryListController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (controller.categories.isEmpty) {
-          return const Center(child: Text('Belum ada kategori'));
-        }
-        return CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index.isOdd) return const SizedBox(height: 8);
-                    final category = controller.categories[index ~/ 2];
-                    return ListTile(
-                      onTap: () => controller.goToEdit(category),
-                      leading: CircleAvatar(
-                        backgroundColor: category.color,
-                        child: SvgPicture.asset(category.icon, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn), width: 20, height: 20),
-                      ),
-                      title: Text(category.label),
-                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                      tileColor: Colors.grey[100],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    );
-                  },
-                  childCount: controller.categories.length * 2 - 1,
+        return RefreshIndicator(
+          onRefresh: controller.loadCategories,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (controller.categories.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: Text('Belum ada kategori')),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        if (index.isOdd) return const SizedBox(height: 8);
+                        final category = controller.categories[index ~/ 2];
+                        return ListTile(
+                          onTap: () => controller.goToEdit(category),
+                          leading: CircleAvatar(
+                            backgroundColor: category.color,
+                            child: SvgPicture.asset(category.icon, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn), width: 20, height: 20),
+                          ),
+                          title: Text(category.label),
+                          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                          tileColor: Colors.grey[100],
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        );
+                      },
+                      childCount: controller.categories.length * 2 - 1,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+            ],
+          ),
         );
       }),
     );
