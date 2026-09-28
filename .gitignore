@@ -48,3 +48,6 @@ migrate_working_dir/
 /android/build/
 /android/app/build/
 /android/.gradle/
+
+# FVM Version Cache
+.fvm/

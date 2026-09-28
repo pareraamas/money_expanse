@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.2
+  sdk: ^3.13.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,21 +33,21 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-  get: ^4.7.2
+  cupertino_icons: ^1.0.9
+  get: ^4.7.3
   freezed_annotation: ^3.1.0
-  json_annotation: ^4.8.1
-  sqflite: ^2.3.2
-  path: ^1.8.3
-  path_provider: ^2.1.2
-  flutter_svg: ^2.0.10+1
+  json_annotation: ^4.12.0
+  sqflite: ^2.4.4
+  path: ^1.9.1
+  path_provider: ^2.1.6
+  flutter_svg: ^2.3.0
   google_fonts: ^8.2.1
-  intl: ^0.20.2
+  intl: ^0.20.3
   flutter_localizations:
     sdk: flutter
   pull_to_refresh: ^2.0.0
-  uuid: ^4.5.1
-  fl_chart: ^0.69.0
+  uuid: ^4.6.0
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -59,11 +59,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  build_runner: ^2.4.8
-  freezed: ^4.0.0
-  json_serializable: ^6.8.0
-  flutter_gen_runner: ^5.4.0
-  flutter_native_splash: ^2.4.6
+  build_runner: ^2.16.1
+  freezed: ^4.0.2
+  json_serializable: ^6.14.1
+  flutter_gen_runner: ^5.15.0
+  flutter_native_splash: ^2.4.8
   flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
