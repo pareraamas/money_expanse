@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_expense/app/theme/app_theme.dart';
@@ -18,6 +20,8 @@ class ShareCardView extends GetView<ShareCardController> {
           return const SkeletonList(itemCount: 1, shape: SkeletonShape.card, padding: EdgeInsets.all(AppSpacing.page));
         }
         final format = controller.format.value;
+        final data = controller.data.value!;
+        final hide = controller.hideAmounts.value;
         return SafeArea(
           top: false,
           child: Column(
@@ -25,37 +29,65 @@ class ShareCardView extends GetView<ShareCardController> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s8, AppSpacing.page, AppSpacing.s16),
+                  padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s16),
                   // Pratinjau diperkecil agar muat; gambar tetap diekspor di ukuran penuh.
                   child: Semantics(
-                    label: 'Pratinjau gambar ${format.label} ringkasan ${AppFormat.monthYear(controller.month)}',
+                    label: format == ShareCardFormat.story
+                        ? 'Pratinjau gambar Story ringkasan ${AppFormat.monthYear(controller.month)}'
+                        : 'Pratinjau carousel ${controller.slideCount} gambar ringkasan ${AppFormat.monthYear(controller.month)}',
                     image: true,
                     excludeSemantics: true,
-                    child: FittedBox(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: AppRadius.cardAll,
-                          boxShadow: [BoxShadow(color: c.scrim.withValues(alpha: 0.16), blurRadius: 24, offset: const Offset(0, 8))],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: AppRadius.cardAll,
-                          child: RepaintBoundary(
-                            key: controller.cardKey,
-                            child: ShareSummaryCard(
-                              month: controller.month,
-                              income: controller.income.value,
-                              expense: controller.expense.value,
-                              slices: controller.slices.toList(),
-                              format: format,
-                              hideAmounts: controller.hideAmounts.value,
+                    child: format == ShareCardFormat.story
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
+                            child: FittedBox(
+                              child: _Framed(
+                                boundaryKey: controller.storyKey,
+                                child: ShareSummaryCard(data: data, hideAmounts: hide),
+                              ),
                             ),
+                          )
+                        : LayoutBuilder(
+                            builder: (context, box) {
+                              final size = ShareCardFormat.feed.size;
+                              final height = math.min(box.maxHeight, (box.maxWidth - AppSpacing.page * 2) * size.height / size.width);
+                              // Semua slide dirender (bukan lazy) agar tiap RepaintBoundary bisa ditangkap.
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    for (var i = 0; i < controller.slideCount; i++) ...[
+                                      if (i > 0) const SizedBox(width: AppSpacing.s8),
+                                      SizedBox(
+                                        width: height * size.width / size.height,
+                                        height: height,
+                                        child: FittedBox(
+                                          child: _Framed(
+                                            boundaryKey: controller.slideKey(i),
+                                            child: ShareFeedSlide(data: data, index: i, hideAmounts: hide),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ),
+              if (format == ShareCardFormat.feed)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, AppSpacing.s12),
+                  child: Text(
+                    'Unggah ${controller.slideCount} gambar sekaligus sebagai carousel. Geser untuk melihat semua.',
+                    textAlign: TextAlign.center,
+                    style: context.text.bodyMedium?.copyWith(color: c.inkMuted),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
                 child: SegmentedButton<ShareCardFormat>(
@@ -79,7 +111,7 @@ class ShareCardView extends GetView<ShareCardController> {
                   builder: (context) => FilledButton.icon(
                     onPressed: controller.isSharing.value ? null : () => controller.share(origin: _originOf(context)),
                     icon: const Icon(AppIcons.shareNetwork),
-                    label: const Text('Bagikan gambar'),
+                    label: Text(controller.imageCount > 1 ? 'Bagikan ${controller.imageCount} gambar' : 'Bagikan gambar'),
                   ),
                 ),
               ),
@@ -87,6 +119,29 @@ class ShareCardView extends GetView<ShareCardController> {
           ),
         );
       }),
+    );
+  }
+}
+
+/// Bayangan + sudut membulat untuk pratinjau. Sudut tidak ikut diekspor
+/// karena `RepaintBoundary` ada di dalam clip.
+class _Framed extends StatelessWidget {
+  const _Framed({required this.boundaryKey, required this.child});
+
+  final GlobalKey boundaryKey;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.cardAll,
+        boxShadow: [BoxShadow(color: context.colors.scrim.withValues(alpha: 0.16), blurRadius: 24, offset: const Offset(0, 8))],
+      ),
+      child: ClipRRect(
+        borderRadius: AppRadius.cardAll,
+        child: RepaintBoundary(key: boundaryKey, child: child),
+      ),
     );
   }
 }

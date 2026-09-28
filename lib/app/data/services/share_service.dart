@@ -14,22 +14,21 @@ import 'transaction_export.dart';
 ///
 /// [origin] adalah posisi tombol pemicu; wajib di iPad agar popover punya jangkar.
 class ShareService {
-  Future<ShareResultStatus> shareExport(ExportFile file, {Rect? origin}) => _share(file.bytes, file.fileName, file.mimeType, origin: origin);
+  Future<ShareResultStatus> shareExport(ExportFile file, {Rect? origin}) => _share([(file.bytes, file.fileName, file.mimeType)], origin: origin);
 
-  Future<ShareResultStatus> shareImage(Uint8List png, String fileName, {String? text, Rect? origin}) =>
-      _share(png, fileName, 'image/png', text: text, origin: origin);
+  /// Beberapa PNG sekaligus; Instagram menjadikannya satu carousel.
+  Future<ShareResultStatus> shareImages(List<(Uint8List, String)> images, {Rect? origin}) =>
+      _share([for (final (bytes, name) in images) (bytes, name, 'image/png')], origin: origin);
 
-  Future<ShareResultStatus> _share(Uint8List bytes, String fileName, String mimeType, {String? text, Rect? origin}) async {
+  Future<ShareResultStatus> _share(List<(Uint8List, String, String)> files, {Rect? origin}) async {
     final dir = await getTemporaryDirectory();
-    // Tulis sebagai byte agar BOM & CRLF CSV tidak diubah.
-    final file = await File(p.join(dir.path, fileName)).writeAsBytes(bytes, flush: true);
-    final result = await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path, mimeType: mimeType)],
-        text: text,
-        sharePositionOrigin: origin,
-      ),
-    );
+    final xFiles = <XFile>[];
+    for (final (bytes, name, mimeType) in files) {
+      // Tulis sebagai byte agar BOM & CRLF CSV tidak diubah.
+      final file = await File(p.join(dir.path, name)).writeAsBytes(bytes, flush: true);
+      xFiles.add(XFile(file.path, mimeType: mimeType));
+    }
+    final result = await SharePlus.instance.share(ShareParams(files: xFiles, sharePositionOrigin: origin));
     return result.status;
   }
 }

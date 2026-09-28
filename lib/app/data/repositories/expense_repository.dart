@@ -2,6 +2,7 @@ import 'package:money_expense/app/data/local/database_helper.dart';
 import 'package:money_expense/app/data/models/expense.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/budget_model.dart';
+import 'package:money_expense/app/data/models/transaction_filter.dart';
 
 class ExpenseRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -24,6 +25,16 @@ class ExpenseRepository {
   // Get expenses with pagination
   Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async {
     return await _databaseHelper.getExpenses(limit: limit, offset: offset);
+  }
+
+  // Get filtered history (offset in rows)
+  Future<List<Expense>> searchExpenses(TransactionFilter filter, {int limit = 20, int offset = 0}) {
+    return _databaseHelper.searchExpenses(filter, limit: limit, offset: offset);
+  }
+
+  // Get count & income/expense totals for a filter
+  Future<TransactionTotals> summarizeExpenses(TransactionFilter filter) {
+    return _databaseHelper.summarizeExpenses(filter);
   }
 
   // Get a single expense by id

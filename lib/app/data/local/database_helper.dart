@@ -5,6 +5,7 @@ import 'package:money_expense/app/data/models/expense.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/models/budget_model.dart';
+import 'package:money_expense/app/data/models/transaction_filter.dart';
 
 import 'dart:io';
 
@@ -207,6 +208,92 @@ class DatabaseHelper {
       );
       return Expense.fromDbMap(map).copyWith(category: category);
     });
+  }
+
+  /// WHERE untuk [TransactionFilter]; alias `e` = expenses, `c` = categories.
+  (String, List<Object?>) _filterWhere(TransactionFilter f) {
+    final where = <String>[];
+    final args = <Object?>[];
+    final q = f.query.trim();
+    if (q.isNotEmpty) {
+      final like = '%${q.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_')}%';
+      where.add("(e.$columnName LIKE ? ESCAPE '\\' OR c.$catLabel LIKE ? ESCAPE '\\')");
+      args.addAll([like, like]);
+    }
+    if (f.transactionType != null) {
+      where.add('e.$columnTransactionType = ?');
+      args.add(f.transactionType);
+    }
+    if (f.start != null) {
+      where.add('e.$columnDateTime >= ?');
+      args.add(f.start!.toIso8601String());
+    }
+    if (f.end != null) {
+      where.add('e.$columnDateTime <= ?');
+      args.add(f.end!.toIso8601String());
+    }
+    if (f.categoryIds.isNotEmpty) {
+      where.add('e.$columnType IN (${List.filled(f.categoryIds.length, '?').join(', ')})');
+      args.addAll(f.categoryIds);
+    }
+    if (f.minAmount != null) {
+      where.add('e.$columnPrice >= ?');
+      args.add(f.minAmount);
+    }
+    if (f.maxAmount != null) {
+      where.add('e.$columnPrice <= ?');
+      args.add(f.maxAmount);
+    }
+    return (where.isEmpty ? '' : 'WHERE ${where.join(' AND ')}', args);
+  }
+
+  /// Riwayat terfilter, [offset] dalam jumlah baris.
+  Future<List<Expense>> searchExpenses(TransactionFilter filter, {int limit = 20, int offset = 0}) async {
+    Database db = await database;
+    final (where, args) = _filterWhere(filter);
+    final orderBy = switch (filter.sort) {
+      TransactionSort.newest => 'e.$columnDateTime DESC',
+      TransactionSort.oldest => 'e.$columnDateTime ASC',
+      TransactionSort.highest => 'e.$columnPrice DESC, e.$columnDateTime DESC',
+      TransactionSort.lowest => 'e.$columnPrice ASC, e.$columnDateTime DESC',
+    };
+    List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT e.*, c.label as cat_label, c.color_value as cat_color, c.icon as cat_icon
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      $where
+      ORDER BY $orderBy
+      LIMIT ? OFFSET ?
+    ''',
+      [...args, limit, offset],
+    );
+
+    return maps.map((map) {
+      final category = Category(
+        id: map[columnType] as String,
+        label: map['cat_label'] as String,
+        colorValue: map['cat_color'] as int,
+        icon: map['cat_icon'] as String,
+      );
+      return Expense.fromDbMap(map).copyWith(category: category);
+    }).toList();
+  }
+
+  /// Jumlah & total masuk/keluar semua baris yang lolos filter.
+  Future<TransactionTotals> summarizeExpenses(TransactionFilter filter) async {
+    Database db = await database;
+    final (where, args) = _filterWhere(filter);
+    final result = await db.rawQuery('''
+      SELECT COUNT(*) as count,
+        SUM(CASE WHEN e.$columnTransactionType = 'income' THEN e.$columnPrice ELSE 0 END) as income,
+        SUM(CASE WHEN e.$columnTransactionType = 'income' THEN 0 ELSE e.$columnPrice END) as expense
+      FROM $tableExpenses e
+      JOIN $tableCategories c ON e.$columnType = c.$catId
+      $where
+    ''', args);
+    final row = result.first;
+    return (count: row['count'] as int? ?? 0, income: (row['income'] as num?)?.toDouble() ?? 0, expense: (row['expense'] as num?)?.toDouble() ?? 0);
   }
 
   Future<Expense?> getExpense(String id) async {

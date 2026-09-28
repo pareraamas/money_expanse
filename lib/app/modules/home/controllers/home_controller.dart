@@ -9,18 +9,16 @@ import 'package:money_expense/app/widgets/app_snackbar.dart';
 class HomeController extends GetxController {
   final ExpenseRepository _expenseRepository = Get.find<ExpenseRepository>();
 
-  static const pageSize = 10;
+  /// Beranda hanya menampilkan transaksi terbaru; sisanya di Riwayat Transaksi.
+  static const recentCount = 10;
 
   final totalOutcomeDay = 0.0.obs;
   final totalOutcomeMonth = 0.0.obs;
   final totalIncomeMonth = 0.0.obs;
   final totalBalance = 0.0.obs;
-  final page = 0.obs;
 
-  /// Load pertama (untuk skeleton), load halaman berikut, dan sisa data.
+  /// Load pertama (untuk skeleton).
   final isLoading = true.obs;
-  final isLoadingMore = false.obs;
-  final hasMore = true.obs;
 
   final listExpenses = <DateTime, List<Expense>>{}.obs;
 
@@ -41,6 +39,9 @@ class HomeController extends GetxController {
     final result = await Get.toNamed(Routes.EXPANSE_CREATE);
     if (result == true) MainNavController.refreshAll();
   }
+
+  /// Riwayat lengkap dengan filter ada di halaman sendiri.
+  void openHistory() => Get.toNamed(Routes.TRANSACTION_HISTORY);
 
   Future<void> openEdit(Expense expense) async {
     final result = await Get.toNamed(Routes.EXPANSE_CREATE, arguments: expense.id);
@@ -69,21 +70,11 @@ class HomeController extends GetxController {
   }
 
   Future<void> onRefresh() async {
-    page.value = 0;
-    hasMore.value = true;
     await Future.wait([onGetMonthlySummary(), onGetTotalOutcomeDay()]);
-    final expenses = await _fetchPage(0);
+    final expenses = await _expenseRepository.getExpenses(limit: recentCount);
     listExpenses.clear();
     _addToGroups(expenses);
     isLoading.value = false;
-  }
-
-  Future<void> onLoad() async {
-    if (isLoadingMore.value || !hasMore.value || isLoading.value) return;
-    isLoadingMore.value = true;
-    page.value += 1;
-    _addToGroups(await _fetchPage(page.value));
-    isLoadingMore.value = false;
   }
 
   Future<void> onGetTotalOutcomeDay() async {
@@ -102,12 +93,6 @@ class HomeController extends GetxController {
     final allIncome = await _expenseRepository.getTotalAmount(DateTime(2000), DateTime(2100), 'income');
     final allExpense = await _expenseRepository.getTotalAmount(DateTime(2000), DateTime(2100), 'expense');
     totalBalance.value = allIncome - allExpense;
-  }
-
-  Future<List<Expense>> _fetchPage(int index) async {
-    final expenses = await _expenseRepository.getExpenses(limit: pageSize, offset: index);
-    if (expenses.length < pageSize) hasMore.value = false;
-    return expenses;
   }
 
   void _addToGroups(List<Expense> expenses) {

@@ -29,6 +29,7 @@ abstract final class AppIcons {
   static const note = IconData(0xe348, fontFamily: _regular, fontPackage: _pkg);
   static const tag = IconData(0xe478, fontFamily: _regular, fontPackage: _pkg);
   static const magnifyingGlass = IconData(0xe30c, fontFamily: _regular, fontPackage: _pkg);
+  static const funnelSimple = IconData(0xe268, fontFamily: _regular, fontPackage: _pkg);
   static const sun = IconData(0xe472, fontFamily: _regular, fontPackage: _pkg);
   static const moon = IconData(0xe330, fontFamily: _regular, fontPackage: _pkg);
   static const shareNetwork = IconData(0xe408, fontFamily: _regular, fontPackage: _pkg);

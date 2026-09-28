@@ -1,6 +1,7 @@
 import 'package:money_expense/app/data/models/budget_model.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/expense.dart';
+import 'package:money_expense/app/data/models/transaction_filter.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
 
 /// Bulan & hari acuan untuk semua test QA. Golden harus sama besok maupun
@@ -123,6 +124,20 @@ class FakeExpenseRepository implements ExpenseRepository {
   @override
   Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async =>
       _joined(expenses).skip(offset * limit).take(limit).toList();
+
+  @override
+  Future<List<Expense>> searchExpenses(TransactionFilter filter, {int limit = 20, int offset = 0}) async =>
+      (_joined(expenses).where(filter.matches).toList()..sort(filter.compare)).skip(offset).take(limit).toList();
+
+  @override
+  Future<TransactionTotals> summarizeExpenses(TransactionFilter filter) async {
+    final list = _joined(expenses).where(filter.matches).toList();
+    return (
+      count: list.length,
+      income: _sum(list.where((e) => e.transactionType == 'income')),
+      expense: _sum(list.where((e) => e.transactionType != 'income')),
+    );
+  }
 
   @override
   Future<Expense?> getExpense(String id) async {

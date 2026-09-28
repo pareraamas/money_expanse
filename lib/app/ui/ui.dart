@@ -10,6 +10,7 @@ export 'app_sheet.dart';
 export 'balance_card.dart';
 export 'budget_progress.dart';
 export 'category_blob.dart';
+export 'date_group_header.dart';
 export 'confirm_dialog.dart';
 export 'empty_state.dart';
 export 'month_switcher.dart';

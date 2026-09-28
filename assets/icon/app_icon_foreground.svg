@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><g transform="translate(192 170) scale(4)" stroke="#1B2430" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#FFFCF8" d="M52 45.5C39.5 45.5 30.5 53 30.5 66L31 103C31.2 116.5 39.5 125 53 125L107.5 125.5C121 125.5 129.8 117 129.6 103.5L129.5 65.5C129.5 53 120.5 46 108 46Z"/>
+    <path fill="#4FD1C0" d="M30.6 67L30.5 66C30.5 53 39.5 45.5 52 45.5L108 46C120.5 46 129.5 53 129.5 65.5L129.5 67L97.5 67.5C91 67.5 90.5 79 80 79C69.5 79 69 67 62.5 67Z"/>
+    <path stroke="#B8F2E8" stroke-width="2.8" d="M40 57Q43 52.5 49 51.5"/>
+    <circle cx="80" cy="71.5" r="6" fill="#FFB547" stroke-width="3"/>
+    <circle cx="64" cy="95" r="5" fill="#1B2430" stroke="none"/>
+    <circle cx="96" cy="95" r="5" fill="#1B2430" stroke="none"/>
+    <ellipse cx="52" cy="106" rx="6.5" ry="4.2" fill="#F2A7B5" stroke="none"/>
+    <ellipse cx="108" cy="106" rx="6.5" ry="4.2" fill="#F2A7B5" stroke="none"/>
+    <path fill="#1B2430" stroke-width="2.8" d="M70 103C72.5 113.5 87.5 113.5 90 103Z"/>
+    <path fill="#F2A7B5" stroke="none" d="M75.5 109.3Q80 106.3 84.5 109.3Q80 112.2 75.5 109.3Z"/>
+    
+  </g></svg>

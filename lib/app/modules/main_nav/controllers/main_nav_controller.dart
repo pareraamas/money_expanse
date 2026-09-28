@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_expense/app/modules/budget/controllers/budget_controller.dart';
 import 'package:money_expense/app/modules/home/controllers/home_controller.dart';
 import 'package:money_expense/app/modules/statistik/controllers/statistik_controller.dart';
+import 'package:money_expense/app/modules/transaction_history/controllers/transaction_history_controller.dart';
 import 'package:money_expense/app/routes/app_pages.dart';
 
 class MainNavController extends GetxController {
@@ -40,5 +41,6 @@ class MainNavController extends GetxController {
     if (Get.isRegistered<HomeController>()) Get.find<HomeController>().onRefresh();
     if (Get.isRegistered<BudgetController>()) Get.find<BudgetController>().loadData();
     if (Get.isRegistered<StatistikController>()) Get.find<StatistikController>().loadData();
+    if (Get.isRegistered<TransactionHistoryController>()) Get.find<TransactionHistoryController>().reload();
   }
 }
