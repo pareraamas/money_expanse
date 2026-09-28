@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// Warna lama. Jangan dipakai di kode baru — gunakan `context.colors`
+/// dari `app_theme.dart`. Dihapus setelah semua layar dimigrasi (Fase 2).
 class AppColor {
   static Color primary = Color(0xff0A97B0);
   static Color background = Color(0xffffffff);
