@@ -213,7 +213,7 @@ abstract final class AppTheme {
         iconColor: c.inkMuted,
         textColor: c.ink,
         titleTextStyle: text.titleMedium,
-        subtitleTextStyle: text.bodyMedium?.copyWith(color: c.inkMuted),
+        subtitleTextStyle: text.bodySmall?.copyWith(color: c.inkMuted),
         contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
         minVerticalPadding: AppSpacing.s12,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.cardAll),

@@ -8,8 +8,8 @@ import 'package:wister_lite/app/data/services/transaction_report.dart';
 import 'package:wister_lite/app/data/services/transaction_xlsx.dart';
 
 void main() {
-  final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/uil_pizza-slice.svg');
-  final salary = Category(id: 'salary', label: 'Gaji', colorValue: 0xff27ae60, icon: 'assets/uil_money.svg');
+  final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/icon_category/uil_pizza-slice.svg');
+  final salary = Category(id: 'salary', label: 'Gaji', colorValue: 0xff27ae60, icon: 'assets/icon_category/uil_money.svg');
 
   Expense tx(String id, String name, Category c, String type, DateTime at, double price) =>
       Expense(id: id, name: name, type: c.id, category: c, transactionType: type, dateTime: at, price: price);

@@ -1,24 +1,43 @@
-# Wister Lite App
+# Wister Lite
 
-Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangun dengan Flutter. Aplikasi ini membantu Anda melacak pengeluaran harian dan bulanan dengan mudah.
+Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangun dengan Flutter. Catat pemasukan dan pengeluaran, atur budget per kategori, lihat statistik bulanan, lalu ekspor atau bagikan laporannya. Semua data tersimpan lokal di perangkat.
 
 ## 🚀 Fitur
 
-- 📊 Catat pengeluaran harian dengan mudah
-- 📅 Lihat ringkasan pengeluaran harian dan bulanan
-- 🏷️ Kategorikan pengeluaran untuk analisis yang lebih baik
-- 🔄 Sinkronisasi data lokal dengan SQLite
+- 💸 **Catat transaksi**: pemasukan dan pengeluaran, dengan keypad nominal khusus
+- 🏷️ **Kategori kustom**: buat, ubah, dan hapus kategori sendiri
+- 🎯 **Budget bulanan**: batas per kategori, progres, dan penanda *pace* untuk bulan berjalan
+- 📊 **Statistik**: ringkasan bulanan dan grafik per kategori (fl_chart)
+- 🗂️ **Riwayat transaksi**: dikelompokkan per tanggal, dengan filter jenis transaksi
+- 📤 **Ekspor laporan**: Excel (`.xlsx`), PDF, atau CSV
+- 📥 **Impor data**: dari CSV / Excel, dengan layar pratinjau (deteksi duplikat, kategori baru, dan baris bermasalah) sebelum disimpan
+- 🖼️ **Kartu ringkasan**: bagikan ringkasan keuangan sebagai gambar
+- 🐣 **Maskot Dompi** untuk empty state dan momen sukses
+- 💾 Penyimpanan lokal dengan SQLite, tanpa akun atau internet
 - 🇮🇩 Antarmuka dalam Bahasa Indonesia
+
+### Format file impor
+
+Kolom dikenali dari nama header (tidak peka huruf besar/kecil). Kolom wajib: **tanggal**, **kategori**, **jumlah**.
+
+| Kolom | Nama yang dikenali |
+|-------|--------------------|
+| Tanggal *(wajib)* | `tanggal`, `tgl`, `date`, `waktu`, `datetime` |
+| Kategori *(wajib)* | `kategori`, `category` |
+| Jumlah *(wajib)* | `jumlah`, `nominal`, `amount`, `harga`, `price`, `total` |
+| Jenis | `jenis`, `tipe`, `type`, `transaction_type` |
+| Catatan | `nama`, `catatan`, `keterangan`, `deskripsi`, `name`, `note` |
+| ID | `id` |
+
+File hasil ekspor CSV/Excel dari aplikasi ini bisa langsung diimpor kembali.
 
 ## 📥 Download APK
 
-Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
+- [app-release.apk](https://github.com/pareraamas/wister_lite/raw/main/build/app/outputs/flutter-apk/app-release.apk) (±27 MB), APK universal untuk semua perangkat Android
 
-- [app-armeabi-v7a-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk) (15.8MB) - Untuk perangkat lama
-- [app-arm64-v8a-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk) (18.1MB) - Untuk perangkat modern (direkomendasikan)
-- [app-x86_64-release.apk](https://github.com/pareraamas/money_expanse/raw/main/build/app/outputs/flutter-apk/app-x86_64-release.apk) (19.3MB) - Untuk emulator x86
+Checksum SHA-1 tersedia di [`app-release.apk.sha1`](build/app/outputs/flutter-apk/app-release.apk.sha1).
 
->Development Dilakukan di Ios, diandroid mungkin akan sedikit berbeda <span style="color: red;">**(perlu diperhatikan)**</span>
+> Development dilakukan di iOS, jadi tampilan di Android mungkin sedikit berbeda.
 
 ## 📱 Screenshots
 
@@ -26,93 +45,96 @@ Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
 |---------|-------------------|----------------------|
 | <img src="screenshoot/Jepretan Layar 2025-09-12 pukul 14.50.30.png" width="200"> | <img src="screenshoot/Jepretan Layar 2025-09-12 pukul 14.52.21.png" width="200"> | <img src="screenshoot/Jepretan Layar 2025-09-12 pukul 14.54.15.png" width="200"> |
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Teknologi
 
-- **Framework**: Flutter
-- **State Management**: GetX
-- **Database**: SQLite (sqflite)
-- **UI Components**: Material Design 3
-- **Lainnya**:
-  - intl: Untuk format tanggal dan mata uang
-  - pull_to_refresh: Untuk refresh data
-  - google_fonts: Untuk tipografi yang lebih baik
-  - flutter_svg: Untuk menampilkan ikon SVG
+- **Framework**: Flutter 3.47.4 (dikunci via [FVM](https://fvm.app/), lihat `.fvmrc`)
+- **State management & routing**: GetX
+- **Database**: SQLite (`sqflite`)
+- **UI**: Material Design 3 dengan design tokens sendiri (`lib/app/theme/tokens`), `google_fonts`, `phosphor_flutter`, `flutter_animate`, `lottie`, `flutter_svg`
+- **Grafik**: `fl_chart`
+- **Impor/ekspor**: `csv`, `excel_community`, `pdf`, `file_picker`, `share_plus`
+- **Code generation**: `freezed`, `json_serializable`, `flutter_gen`
+
+## 📂 Struktur Proyek
+
+```
+lib/app/
+├── data/        # model, database lokal, repository, service impor/ekspor
+├── modules/     # fitur (pola GetX: bindings / controllers / views)
+│   ├── home, budget, statistik, transaction_history
+│   ├── expanse_create, category_create, category_list
+│   └── import_preview, share_card, main_nav
+├── routes/      # definisi route GetX
+├── theme/       # tema & design tokens (warna, spacing, radius, tipografi, motion)
+├── ui/          # komponen UI bersama (+ gallery komponen untuk QA)
+└── widgets/
+```
 
 ## 🚀 Memulai
 
 ### Prasyarat
 
-- Flutter SDK (versi terbaru)
-- Dart SDK (versi terbaru)
+- Flutter 3.47.4 (disarankan lewat FVM)
 - Perangkat atau emulator Android/iOS
 
 ### Instalasi
 
-1. Clone repositori ini:
+1. Clone repositori:
    ```bash
-   git clone [URL_REPOSITORY]
+   git clone https://github.com/pareraamas/wister_lite.git
    cd wister_lite
    ```
 
 2. Install dependencies:
    ```bash
-   flutter pub get
+   fvm flutter pub get   # atau: flutter pub get
    ```
 
-3. Generate kode dengan build_runner (jika diperlukan):
+3. Generate kode (setelah mengubah model freezed/json atau aset):
    ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
+   dart run build_runner build --delete-conflicting-outputs
    ```
 
-4. Build APK untuk semua arsitektur:
-   ```bash
-   flutter build apk --split-per-abi 
-   ```
-   
-   File APK akan tersedia di folder `build/app/outputs` dengan format:
-   - `app-armeabi-v7a-release.apk`
-   - `app-arm64-v8a-release.apk`
-   - `app-x86_64-release.apk`
-
-3. Jalankan aplikasi:
+4. Jalankan aplikasi:
    ```bash
    flutter run
    ```
 
+5. Jalankan test:
+   ```bash
+   flutter test
+   ```
+
+### Build APK
+
+```bash
+flutter build apk --release
+```
+
+File hasil build ada di `build/app/outputs/flutter-apk/app-release.apk`. APK disimpan di repo lewat **Git LFS**, jadi pastikan `git lfs install` sudah dijalankan sebelum commit APK baru.
+
 ## 📝 Cara Penggunaan
 
-1. **Menambahkan Pengeluaran Baru**
-   - Tekan tombol "+" di pojok kanan bawah
-   - Isi detail pengeluaran (nama, jumlah, kategori, dll.)
-   - Tekan "Simpan" untuk menyimpan catatan
-
-2. **Melihat Ringkasan**
-   - Lihat ringkasan pengeluaran harian dan bulanan di beranda
-   - Scroll ke bawah untuk melihat daftar pengeluaran terkini
-
-3. **Analisis Kategori**
-   - Gulir ke bagian tengah beranda untuk melihat pengeluaran berdasarkan kategori
-   - Setiap kategori menampilkan total pengeluaran
+1. **Tambah transaksi**: tekan tombol "+", pilih pemasukan atau pengeluaran, isi nominal, kategori, dan catatan, lalu simpan.
+2. **Atur budget**: buka tab Budget dan tentukan batas bulanan per kategori.
+3. **Lihat statistik**: buka tab Statistik untuk ringkasan dan grafik per bulan; ganti bulan lewat pemilih bulan.
+4. **Ekspor / impor**: dari halaman Statistik, ekspor laporan ke Excel, PDF, atau CSV, atau impor file CSV/Excel lalu periksa pratinjaunya sebelum disimpan.
+5. **Bagikan**: dari halaman Statistik, buat kartu ringkasan dan bagikan sebagai gambar.
 
 ## 🤝 Berkontribusi
 
-Kontribusi selalu diterima! Berikut cara Anda dapat berkontribusi:
-
-1. Fork Project
-2. Buat Branch Fitur Anda (`git checkout -b feature/AmazingFeature`)
-3. Commit Perubahan Anda (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke Branch (`git push origin feature/AmazingFeature`)
+1. Fork repositori
+2. Buat branch fitur (`git checkout -b feature/NamaFitur`)
+3. Commit perubahan (`git commit -m 'feat: tambah NamaFitur'`)
+4. Push ke branch (`git push origin feature/NamaFitur`)
 5. Buka Pull Request
-
-## 📄 Lisensi
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ## ✨ Penghargaan
 
 - [Flutter](https://flutter.dev/)
 - [GetX](https://pub.dev/packages/get)
 - [Sqflite](https://pub.dev/packages/sqflite)
+- [fl_chart](https://pub.dev/packages/fl_chart)
 
 ---
 

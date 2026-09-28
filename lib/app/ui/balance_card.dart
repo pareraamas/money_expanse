@@ -76,7 +76,7 @@ class BalanceCard extends StatelessWidget {
           FittedBox(fit: BoxFit.scaleDown, alignment: AlignmentDirectional.centerStart, child: number),
           if (caption != null) ...[
             const SizedBox(height: AppSpacing.s4),
-            Text(caption!, style: context.text.bodyMedium?.copyWith(color: t.foregroundMuted)),
+            Text(caption!, style: context.text.bodySmall?.copyWith(color: t.foregroundMuted)),
           ],
           if (footer != null) ...[const SizedBox(height: AppSpacing.s16), footer!],
         ],

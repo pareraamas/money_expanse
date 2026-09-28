@@ -85,7 +85,7 @@ class ShareCardView extends GetView<ShareCardController> {
                   child: Text(
                     'Unggah ${controller.slideCount} gambar sekaligus sebagai carousel. Geser untuk melihat semua.',
                     textAlign: TextAlign.center,
-                    style: context.text.bodyMedium?.copyWith(color: c.inkMuted),
+                    style: context.text.bodySmall?.copyWith(color: c.inkMuted),
                   ),
                 ),
               Padding(
@@ -102,7 +102,7 @@ class ShareCardView extends GetView<ShareCardController> {
                 value: controller.hideAmounts.value,
                 onChanged: (v) => controller.hideAmounts.value = v,
                 title: const Text('Sembunyikan nominal'),
-                subtitle: Text('Hanya persentase yang tampil', style: context.text.bodyMedium?.copyWith(color: c.inkMuted)),
+                subtitle: Text('Hanya persentase yang tampil', style: context.text.bodySmall?.copyWith(color: c.inkMuted)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
               ),
               Padding(

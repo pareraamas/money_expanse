@@ -5,7 +5,7 @@ import 'package:wister_lite/app/data/models/expense.dart';
 import 'package:wister_lite/app/data/services/transaction_csv.dart';
 
 void main() {
-  final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/uil_pizza-slice.svg');
+  final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/icon_category/uil_pizza-slice.svg');
 
   Expense tx(String id, String name, String type, DateTime at, double price) =>
       Expense(id: id, name: name, type: 'food', category: food, transactionType: type, dateTime: at, price: price);

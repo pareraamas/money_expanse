@@ -11,6 +11,186 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsIconCategoryGen {
+  const $AssetsIconCategoryGen();
+
+  /// File path: assets/icon_category/uil_basketball.svg
+  String get uilBasketball => 'assets/icon_category/uil_basketball.svg';
+
+  /// File path: assets/icon_category/uil_bolt.svg
+  String get uilBolt => 'assets/icon_category/uil_bolt.svg';
+
+  /// File path: assets/icon_category/uil_book-open.svg
+  String get uilBookOpen => 'assets/icon_category/uil_book-open.svg';
+
+  /// File path: assets/icon_category/uil_briefcase.svg
+  String get uilBriefcase => 'assets/icon_category/uil_briefcase.svg';
+
+  /// File path: assets/icon_category/uil_building.svg
+  String get uilBuilding => 'assets/icon_category/uil_building.svg';
+
+  /// File path: assets/icon_category/uil_bus.svg
+  String get uilBus => 'assets/icon_category/uil_bus.svg';
+
+  /// File path: assets/icon_category/uil_car-sideview.svg
+  String get uilCarSideview => 'assets/icon_category/uil_car-sideview.svg';
+
+  /// File path: assets/icon_category/uil_chart-line.svg
+  String get uilChartLine => 'assets/icon_category/uil_chart-line.svg';
+
+  /// File path: assets/icon_category/uil_clapper-board.svg
+  String get uilClapperBoard => 'assets/icon_category/uil_clapper-board.svg';
+
+  /// File path: assets/icon_category/uil_coffee.svg
+  String get uilCoffee => 'assets/icon_category/uil_coffee.svg';
+
+  /// File path: assets/icon_category/uil_credit-card.svg
+  String get uilCreditCard => 'assets/icon_category/uil_credit-card.svg';
+
+  /// File path: assets/icon_category/uil_droplet.svg
+  String get uilDroplet => 'assets/icon_category/uil_droplet.svg';
+
+  /// File path: assets/icon_category/uil_dumbbell.svg
+  String get uilDumbbell => 'assets/icon_category/uil_dumbbell.svg';
+
+  /// File path: assets/icon_category/uil_gamepad.svg
+  String get uilGamepad => 'assets/icon_category/uil_gamepad.svg';
+
+  /// File path: assets/icon_category/uil_gas-station.svg
+  String get uilGasStation => 'assets/icon_category/uil_gas-station.svg';
+
+  /// File path: assets/icon_category/uil_gift.svg
+  String get uilGift => 'assets/icon_category/uil_gift.svg';
+
+  /// File path: assets/icon_category/uil_graduation-cap.svg
+  String get uilGraduationCap => 'assets/icon_category/uil_graduation-cap.svg';
+
+  /// File path: assets/icon_category/uil_hand-heart.svg
+  String get uilHandHeart => 'assets/icon_category/uil_hand-heart.svg';
+
+  /// File path: assets/icon_category/uil_heart-pulse.svg
+  String get uilHeartPulse => 'assets/icon_category/uil_heart-pulse.svg';
+
+  /// File path: assets/icon_category/uil_home.svg
+  String get uilHome => 'assets/icon_category/uil_home.svg';
+
+  /// File path: assets/icon_category/uil_luggage.svg
+  String get uilLuggage => 'assets/icon_category/uil_luggage.svg';
+
+  /// File path: assets/icon_category/uil_money.svg
+  String get uilMoney => 'assets/icon_category/uil_money.svg';
+
+  /// File path: assets/icon_category/uil_monitor.svg
+  String get uilMonitor => 'assets/icon_category/uil_monitor.svg';
+
+  /// File path: assets/icon_category/uil_motorcycle.svg
+  String get uilMotorcycle => 'assets/icon_category/uil_motorcycle.svg';
+
+  /// File path: assets/icon_category/uil_music.svg
+  String get uilMusic => 'assets/icon_category/uil_music.svg';
+
+  /// File path: assets/icon_category/uil_paw.svg
+  String get uilPaw => 'assets/icon_category/uil_paw.svg';
+
+  /// File path: assets/icon_category/uil_piggy-bank.svg
+  String get uilPiggyBank => 'assets/icon_category/uil_piggy-bank.svg';
+
+  /// File path: assets/icon_category/uil_pill.svg
+  String get uilPill => 'assets/icon_category/uil_pill.svg';
+
+  /// File path: assets/icon_category/uil_pizza-slice.svg
+  String get uilPizzaSlice => 'assets/icon_category/uil_pizza-slice.svg';
+
+  /// File path: assets/icon_category/uil_plane.svg
+  String get uilPlane => 'assets/icon_category/uil_plane.svg';
+
+  /// File path: assets/icon_category/uil_receipt.svg
+  String get uilReceipt => 'assets/icon_category/uil_receipt.svg';
+
+  /// File path: assets/icon_category/uil_rss-alt.svg
+  String get uilRssAlt => 'assets/icon_category/uil_rss-alt.svg';
+
+  /// File path: assets/icon_category/uil_scissors.svg
+  String get uilScissors => 'assets/icon_category/uil_scissors.svg';
+
+  /// File path: assets/icon_category/uil_shirt.svg
+  String get uilShirt => 'assets/icon_category/uil_shirt.svg';
+
+  /// File path: assets/icon_category/uil_shopping-bag.svg
+  String get uilShoppingBag => 'assets/icon_category/uil_shopping-bag.svg';
+
+  /// File path: assets/icon_category/uil_shopping-cart.svg
+  String get uilShoppingCart => 'assets/icon_category/uil_shopping-cart.svg';
+
+  /// File path: assets/icon_category/uil_smartphone.svg
+  String get uilSmartphone => 'assets/icon_category/uil_smartphone.svg';
+
+  /// File path: assets/icon_category/uil_stroller.svg
+  String get uilStroller => 'assets/icon_category/uil_stroller.svg';
+
+  /// File path: assets/icon_category/uil_tag.svg
+  String get uilTag => 'assets/icon_category/uil_tag.svg';
+
+  /// File path: assets/icon_category/uil_utensils.svg
+  String get uilUtensils => 'assets/icon_category/uil_utensils.svg';
+
+  /// File path: assets/icon_category/uil_wallet.svg
+  String get uilWallet => 'assets/icon_category/uil_wallet.svg';
+
+  /// File path: assets/icon_category/uil_wifi.svg
+  String get uilWifi => 'assets/icon_category/uil_wifi.svg';
+
+  /// File path: assets/icon_category/uil_wrench.svg
+  String get uilWrench => 'assets/icon_category/uil_wrench.svg';
+
+  /// List of all assets
+  List<String> get values => [
+    uilBasketball,
+    uilBolt,
+    uilBookOpen,
+    uilBriefcase,
+    uilBuilding,
+    uilBus,
+    uilCarSideview,
+    uilChartLine,
+    uilClapperBoard,
+    uilCoffee,
+    uilCreditCard,
+    uilDroplet,
+    uilDumbbell,
+    uilGamepad,
+    uilGasStation,
+    uilGift,
+    uilGraduationCap,
+    uilHandHeart,
+    uilHeartPulse,
+    uilHome,
+    uilLuggage,
+    uilMoney,
+    uilMonitor,
+    uilMotorcycle,
+    uilMusic,
+    uilPaw,
+    uilPiggyBank,
+    uilPill,
+    uilPizzaSlice,
+    uilPlane,
+    uilReceipt,
+    uilRssAlt,
+    uilScissors,
+    uilShirt,
+    uilShoppingBag,
+    uilShoppingCart,
+    uilSmartphone,
+    uilStroller,
+    uilTag,
+    uilUtensils,
+    uilWallet,
+    uilWifi,
+    uilWrench,
+  ];
+}
+
 class $AssetsIllustrationsGen {
   const $AssetsIllustrationsGen();
 
@@ -94,109 +274,14 @@ class $AssetsIllustrationsEmptyGen {
 }
 
 abstract final class Assets {
+  static const AssetGenImage appIcon = AssetGenImage('assets/app_icon.png');
+  static const $AssetsIconCategoryGen iconCategory = $AssetsIconCategoryGen();
   static const $AssetsIllustrationsGen illustrations =
       $AssetsIllustrationsGen();
-  static const AssetGenImage logo = AssetGenImage('assets/logo.png');
-  static const AssetGenImage logoSecond = AssetGenImage(
-    'assets/logo_second.png',
-  );
-  static const AssetGenImage logoSplash = AssetGenImage(
-    'assets/logo_splash.png',
-  );
   static const $AssetsLottieGen lottie = $AssetsLottieGen();
-  static const String uilBasketball = 'assets/uil_basketball.svg';
-  static const String uilBolt = 'assets/uil_bolt.svg';
-  static const String uilBookOpen = 'assets/uil_book-open.svg';
-  static const String uilBriefcase = 'assets/uil_briefcase.svg';
-  static const String uilBuilding = 'assets/uil_building.svg';
-  static const String uilBus = 'assets/uil_bus.svg';
-  static const String uilCarSideview = 'assets/uil_car-sideview.svg';
-  static const String uilChartLine = 'assets/uil_chart-line.svg';
-  static const String uilClapperBoard = 'assets/uil_clapper-board.svg';
-  static const String uilCoffee = 'assets/uil_coffee.svg';
-  static const String uilCreditCard = 'assets/uil_credit-card.svg';
-  static const String uilDroplet = 'assets/uil_droplet.svg';
-  static const String uilDumbbell = 'assets/uil_dumbbell.svg';
-  static const String uilGamepad = 'assets/uil_gamepad.svg';
-  static const String uilGasStation = 'assets/uil_gas-station.svg';
-  static const String uilGift = 'assets/uil_gift.svg';
-  static const String uilGraduationCap = 'assets/uil_graduation-cap.svg';
-  static const String uilHandHeart = 'assets/uil_hand-heart.svg';
-  static const String uilHeartPulse = 'assets/uil_heart-pulse.svg';
-  static const String uilHome = 'assets/uil_home.svg';
-  static const String uilLuggage = 'assets/uil_luggage.svg';
-  static const String uilMoney = 'assets/uil_money.svg';
-  static const String uilMonitor = 'assets/uil_monitor.svg';
-  static const String uilMotorcycle = 'assets/uil_motorcycle.svg';
-  static const String uilMusic = 'assets/uil_music.svg';
-  static const String uilPaw = 'assets/uil_paw.svg';
-  static const String uilPiggyBank = 'assets/uil_piggy-bank.svg';
-  static const String uilPill = 'assets/uil_pill.svg';
-  static const String uilPizzaSlice = 'assets/uil_pizza-slice.svg';
-  static const String uilPlane = 'assets/uil_plane.svg';
-  static const String uilReceipt = 'assets/uil_receipt.svg';
-  static const String uilRssAlt = 'assets/uil_rss-alt.svg';
-  static const String uilScissors = 'assets/uil_scissors.svg';
-  static const String uilShirt = 'assets/uil_shirt.svg';
-  static const String uilShoppingBag = 'assets/uil_shopping-bag.svg';
-  static const String uilShoppingCart = 'assets/uil_shopping-cart.svg';
-  static const String uilSmartphone = 'assets/uil_smartphone.svg';
-  static const String uilStroller = 'assets/uil_stroller.svg';
-  static const String uilTag = 'assets/uil_tag.svg';
-  static const String uilUtensils = 'assets/uil_utensils.svg';
-  static const String uilWallet = 'assets/uil_wallet.svg';
-  static const String uilWifi = 'assets/uil_wifi.svg';
-  static const String uilWrench = 'assets/uil_wrench.svg';
 
   /// List of all assets
-  static List<dynamic> get values => [
-    logo,
-    logoSecond,
-    logoSplash,
-    uilBasketball,
-    uilBolt,
-    uilBookOpen,
-    uilBriefcase,
-    uilBuilding,
-    uilBus,
-    uilCarSideview,
-    uilChartLine,
-    uilClapperBoard,
-    uilCoffee,
-    uilCreditCard,
-    uilDroplet,
-    uilDumbbell,
-    uilGamepad,
-    uilGasStation,
-    uilGift,
-    uilGraduationCap,
-    uilHandHeart,
-    uilHeartPulse,
-    uilHome,
-    uilLuggage,
-    uilMoney,
-    uilMonitor,
-    uilMotorcycle,
-    uilMusic,
-    uilPaw,
-    uilPiggyBank,
-    uilPill,
-    uilPizzaSlice,
-    uilPlane,
-    uilReceipt,
-    uilRssAlt,
-    uilScissors,
-    uilShirt,
-    uilShoppingBag,
-    uilShoppingCart,
-    uilSmartphone,
-    uilStroller,
-    uilTag,
-    uilUtensils,
-    uilWallet,
-    uilWifi,
-    uilWrench,
-  ];
+  static List<AssetGenImage> get values => [appIcon];
 }
 
 class AssetGenImage {

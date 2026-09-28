@@ -95,7 +95,7 @@ class StatistikView extends GetView<StatistikController> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.card),
-                  child: Text('Belum ada pengeluaran bulan ini.', style: context.text.bodyLarge?.copyWith(color: context.colors.inkMuted)),
+                  child: Text('Belum ada pengeluaran bulan ini.', style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
                 ),
               )
             else ...[
@@ -145,7 +145,7 @@ class _ExportSheetState extends State<_ExportSheet> {
   Widget _option(IconData icon, String title, String subtitle, VoidCallback onTap) => ListTile(
     leading: Icon(icon, color: context.colors.brand),
     title: Text(title),
-    subtitle: Text(subtitle, style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
+    subtitle: Text(subtitle, style: context.text.bodySmall?.copyWith(color: context.colors.inkMuted)),
     contentPadding: EdgeInsets.zero,
     onTap: () {
       Navigator.of(context).pop();

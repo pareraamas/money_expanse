@@ -14,7 +14,7 @@ class CategoryCreateController extends GetxController {
 
   /// 9 warna sama persis dengan kategori bawaan (disimpan di SQLite).
   static final availableColors = [for (final t in ExpenseType.values) t.color];
-  static const availableIcons = CategoryIcons.all;
+  static final availableIcons = CategoryIcons.all;
 
   late final Rx<Color> selectedColor;
   late final RxString selectedIcon;

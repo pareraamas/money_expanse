@@ -221,7 +221,7 @@ void main() {
 
   testWidgets('Animasi shimmer & empty state berjalan tanpa error', (tester) async {
     await tester.pumpWidget(
-      harness(const Column(children: [SkeletonList(itemCount: 2), EmptyState.kategori()]), AppTheme.light(), reduced: false),
+      harness(Column(children: [const SkeletonList(itemCount: 2), EmptyState.kategori()]), AppTheme.light(), reduced: false),
     );
     await tester.pump(SkeletonList.period);
     await tester.pump(SkeletonList.period);

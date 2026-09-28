@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wister_lite/app/ui/app_illustration.dart';
 
 class Category {
   final String id;
@@ -16,7 +17,7 @@ class Category {
   }
 
   factory Category.fromMap(Map<String, dynamic> map) {
-    return Category(id: map['id'] as String, label: map['label'] as String, colorValue: map['color_value'] as int, icon: map['icon'] as String);
+    return Category(id: map['id'] as String, label: map['label'] as String, colorValue: map['color_value'] as int, icon: CategoryIcons.resolve(map['icon'] as String));
   }
 
   factory Category.create({required String label, required Color color, required String icon}) {

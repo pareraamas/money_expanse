@@ -13,7 +13,7 @@ class ConfirmDialog extends StatelessWidget {
     this.confirmLabel = 'Hapus',
     this.cancelLabel = 'Batal',
     this.destructive = true,
-    this.illustration = AppIllustrations.confirmHapus,
+    this.illustration,
   });
 
   final String title;
@@ -23,7 +23,9 @@ class ConfirmDialog extends StatelessWidget {
 
   /// True: tombol konfirmasi berwarna bahaya (hapus). False: warna brand.
   final bool destructive;
-  final String illustration;
+
+  /// Null = [AppIllustrations.confirmHapus].
+  final String? illustration;
 
   /// Menampilkan dialog; `true` hanya jika user menekan [confirmLabel].
   static Future<bool> show(
@@ -56,14 +58,14 @@ class ConfirmDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppIllustration(illustration, size: 64),
+            AppIllustration(illustration ?? AppIllustrations.confirmHapus, size: 64),
             const SizedBox(height: AppSpacing.s16),
             Semantics(
               header: true,
               child: Text(title, textAlign: TextAlign.center, style: context.text.titleLarge?.copyWith(color: c.ink)),
             ),
             const SizedBox(height: AppSpacing.s8),
-            Text(message, textAlign: TextAlign.center, style: context.text.bodyMedium?.copyWith(color: c.inkMuted)),
+            Text(message, textAlign: TextAlign.center, style: context.text.bodySmall?.copyWith(color: c.inkMuted)),
             const SizedBox(height: AppSpacing.s24),
             Row(
               children: [

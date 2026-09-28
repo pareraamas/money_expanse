@@ -44,7 +44,7 @@ class ImportPreviewView extends GetView<ImportPreviewController> {
             const SizedBox(height: AppSpacing.s4),
             Text(
               'Dibuat otomatis. Ikon dan warnanya bisa diubah di Kelola Kategori.',
-              style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted),
+              style: context.text.bodySmall?.copyWith(color: context.colors.inkMuted),
             ),
             const SizedBox(height: AppSpacing.s12),
             Wrap(
@@ -156,7 +156,7 @@ class _Summary extends StatelessWidget {
             const SizedBox(height: AppSpacing.s4),
             Text(
               range.$1 == range.$2 ? date(range.$1) : '${date(range.$1)} – ${date(range.$2)}',
-              style: context.text.bodyMedium?.copyWith(color: c.inkMuted),
+              style: context.text.bodySmall?.copyWith(color: c.inkMuted),
             ),
             const SizedBox(height: AppSpacing.s12),
             Wrap(
@@ -218,7 +218,7 @@ class _Skipped extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final muted = context.text.bodyMedium?.copyWith(color: c.inkMuted);
+    final muted = context.text.bodySmall?.copyWith(color: c.inkMuted);
     final rest = plan.issues.length - maxIssues;
     return Card(
       child: Padding(

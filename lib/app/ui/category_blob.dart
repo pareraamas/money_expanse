@@ -20,7 +20,7 @@ class CategoryBlob extends StatelessWidget {
     this.semanticLabel,
   });
 
-  /// Path SVG ikon kategori (`Category.icon`), mis. `assets/uil_gift.svg`.
+  /// Path SVG ikon kategori (`Category.icon`), mis. `assets/icon_category/uil_gift.svg`.
   final String iconAsset;
 
   /// Warna kategori (`Category.color`).
@@ -41,7 +41,9 @@ class CategoryBlob extends StatelessWidget {
     final t = context.components.categoryBlob;
     final d = dimensionOf(t, size);
     final icon = d * t.iconScale;
-    final seed = iconAsset.codeUnits.fold<int>(0, (a, b) => (a * 31 + b) & 0x7fffffff);
+    // Seed dari nama file dengan prefix lama `assets/` agar bentuk blob tidak
+    // berubah sejak ikon dipindah ke `assets/icon_category/`.
+    final seed = 'assets/${iconAsset.split('/').last}'.codeUnits.fold<int>(0, (a, b) => (a * 31 + b) & 0x7fffffff);
 
     final blob = CustomPaint(
       painter: BlobPainter(color: t.tint(color), seed: seed),

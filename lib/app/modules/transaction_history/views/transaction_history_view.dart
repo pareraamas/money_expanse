@@ -84,7 +84,7 @@ class TransactionHistoryView extends GetView<TransactionHistoryController> {
                   onAction: controller.resetFilters,
                   illustrationSize: 140,
                 )
-              : const EmptyState.beranda(illustrationSize: 140),
+              : EmptyState.beranda(illustrationSize: 140),
         ),
       ];
     }

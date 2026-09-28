@@ -17,28 +17,28 @@ class EmptyState extends StatelessWidget {
   });
 
   /// Beranda: riwayat kosong.
-  const EmptyState.beranda({super.key, this.onAction, this.illustrationSize = 160})
+  EmptyState.beranda({super.key, this.onAction, this.illustrationSize = 160})
     : illustration = AppIllustrations.emptyBeranda,
       title = 'Belum ada catatan',
       message = 'Yuk, catat pengeluaran pertamamu.',
       actionLabel = 'Tambah';
 
   /// Anggaran: belum ada budget bulan ini.
-  const EmptyState.anggaran({super.key, this.onAction, this.illustrationSize = 160})
+  EmptyState.anggaran({super.key, this.onAction, this.illustrationSize = 160})
     : illustration = AppIllustrations.emptyAnggaran,
       title = 'Belum ada anggaran',
       message = 'Belum ada anggaran bulan ini.',
       actionLabel = 'Atur anggaran';
 
   /// Statistik: belum ada transaksi bulan ini.
-  const EmptyState.statistik({super.key, this.onAction, this.illustrationSize = 160})
+  EmptyState.statistik({super.key, this.onAction, this.illustrationSize = 160})
     : illustration = AppIllustrations.emptyStatistik,
       title = 'Bulan ini masih bersih',
       message = 'Belum ada transaksi untuk dihitung.',
       actionLabel = 'Tambah transaksi';
 
   /// Kelola Kategori: belum ada kategori.
-  const EmptyState.kategori({super.key, this.onAction, this.illustrationSize = 160})
+  EmptyState.kategori({super.key, this.onAction, this.illustrationSize = 160})
     : illustration = AppIllustrations.emptyKategori,
       title = 'Kategorimu kosong',
       message = 'Buat kategori agar catatanmu lebih rapi.',
@@ -78,7 +78,7 @@ class EmptyState extends StatelessWidget {
               child: Text(title, textAlign: TextAlign.center, style: t.titleLarge?.copyWith(color: c.ink)),
             ),
             const SizedBox(height: AppSpacing.s8),
-            Text(message, textAlign: TextAlign.center, style: t.bodyLarge?.copyWith(color: c.inkMuted)),
+            Text(message, textAlign: TextAlign.center, style: t.bodyMedium?.copyWith(color: c.inkMuted)),
             if (actionLabel != null) ...[
               const SizedBox(height: AppSpacing.s24),
               FilledButton(onPressed: onAction, child: Text(actionLabel!)),

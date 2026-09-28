@@ -19,7 +19,8 @@ const _contractRgb = {0x1B2430, 0x0E8C7F, 0xCDEFE9, 0xFFB547, 0xFFE7C2, 0xFFFFFF
 
 /// Path ikon kategori di rilis sebelum redesign (lib/gen/assets.gen.dart,
 /// commit 3b8ce8e). Nilai ini tersimpan di SQLite pengguna sebagai
-/// `categories.icon`, jadi file-nya wajib tetap ada dengan nama yang sama.
+/// `categories.icon`; sejak ikon dipindah ke `assets/icon_category/`, path ini
+/// wajib bisa dipetakan ulang oleh `CategoryIcons.resolve`.
 const _legacyCategoryIcons = [
   'assets/uil_basketball.svg',
   'assets/uil_book-open.svg',
@@ -51,12 +52,16 @@ void main() {
   setUpAll(setUpQa);
 
   group('ikon kategori', () {
-    test('path lama di SQLite tetap ada', () {
-      expect(CategoryIcons.legacy.toSet(), _legacyCategoryIcons.toSet());
-      expect(CategoryIcons.all, containsAll(_legacyCategoryIcons));
+    test('path lama di SQLite dipetakan ke ikon yang ada', () {
+      final resolved = _legacyCategoryIcons.map(CategoryIcons.resolve).toSet();
+      expect(CategoryIcons.legacy.toSet(), resolved);
+      expect(CategoryIcons.all, containsAll(resolved));
       expect(CategoryIcons.all.toSet(), hasLength(CategoryIcons.all.length), reason: 'ada ikon ganda');
       for (final t in ExpenseType.values) {
-        expect(_legacyCategoryIcons, contains(t.icon), reason: '${t.name} menyimpan path ikon baru');
+        expect(resolved, contains(t.icon), reason: '${t.name} bukan ikon bawaan lama');
+      }
+      for (final path in CategoryIcons.all) {
+        expect(CategoryIcons.resolve(path), path, reason: 'path baru tidak boleh diubah');
       }
     });
 

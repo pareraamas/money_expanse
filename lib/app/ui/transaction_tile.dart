@@ -84,7 +84,7 @@ class TransactionTile extends StatelessWidget {
                     children: [
                       Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: t.titleMedium?.copyWith(color: c.ink)),
                       if (subtitle.isNotEmpty)
-                        Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: t.bodyMedium?.copyWith(color: c.inkMuted)),
+                        Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: t.bodySmall?.copyWith(color: c.inkMuted)),
                     ],
                   ),
                 ),

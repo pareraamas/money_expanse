@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../gen/assets.gen.dart';
 import '../theme/app_theme.dart';
 import 'app_format.dart';
 import 'app_illustration.dart';
@@ -473,9 +474,7 @@ class ShareAppMark extends StatelessWidget {
 
   /// Salinan 256 px dari `ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png`.
   /// Perbarui bila ikon launcher berubah.
-  static const _asset = 'assets/app_icon.png';
-
-  static ImageProvider provider(double size) => ResizeImage(const AssetImage(_asset), width: (size * 3).round());
+  static ImageProvider provider(double size) => ResizeImage(Assets.appIcon.provider(), width: (size * 3).round());
 
   /// Panggil sebelum kartu ditangkap agar ikon sudah terdekode.
   static Future<void> precache(BuildContext context) => Future.wait([

@@ -96,7 +96,7 @@ class AppSheet extends StatelessWidget {
                           ),
                           if (subtitle != null) ...[
                             const SizedBox(height: AppSpacing.s4),
-                            Text(subtitle!, style: t.bodyMedium?.copyWith(color: c.inkMuted)),
+                            Text(subtitle!, style: t.bodySmall?.copyWith(color: c.inkMuted)),
                           ],
                         ],
                       ),

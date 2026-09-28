@@ -31,7 +31,7 @@ class HomeView extends GetView<HomeController> {
                 padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, 0),
                 sliver: SliverList.list(
                   children: [
-                    Text('Jangan lupa catat keuanganmu hari ini.', style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
+                    Text('Jangan lupa catat keuanganmu hari ini.', style: context.text.bodySmall?.copyWith(color: context.colors.inkMuted)),
                     const SizedBox(height: AppSpacing.s20),
                     BalanceCard(amount: controller.totalBalance.value, caption: 'Semua pemasukan dikurangi pengeluaran'),
                     const SizedBox(height: AppSpacing.stack),
@@ -192,7 +192,7 @@ class _TodayRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.card, vertical: AppSpacing.s12),
         child: Row(
           children: [
-            if (empty) ...[const AppIllustration(AppIllustrations.hariIniKosong, size: 40), const SizedBox(width: AppSpacing.s12)],
+            if (empty) ...[AppIllustration(AppIllustrations.hariIniKosong, size: 40), const SizedBox(width: AppSpacing.s12)],
             Expanded(
               child: Text(
                 empty ? 'Hari ini belum ada pengeluaran' : 'Keluar hari ini',

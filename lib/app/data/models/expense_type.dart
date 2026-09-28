@@ -21,15 +21,15 @@ enum ExpenseType {
 
   // get icon
   String get icon => switch (this) {
-    ExpenseType.FOOD => Assets.uilPizzaSlice,
-    ExpenseType.INTERNET => Assets.uilRssAlt,
-    ExpenseType.EDUCATION => Assets.uilBookOpen,
-    ExpenseType.GIFT => Assets.uilGift,
-    ExpenseType.TRANSPORTATION => Assets.uilCarSideview,
-    ExpenseType.SHOPPING => Assets.uilShoppingCart,
-    ExpenseType.HOME_APPLIANCES => Assets.uilHome,
-    ExpenseType.SPORT => Assets.uilBasketball,
-    ExpenseType.ENTERTAINMENT => Assets.uilClapperBoard,
+    ExpenseType.FOOD => Assets.iconCategory.uilPizzaSlice,
+    ExpenseType.INTERNET => Assets.iconCategory.uilRssAlt,
+    ExpenseType.EDUCATION => Assets.iconCategory.uilBookOpen,
+    ExpenseType.GIFT => Assets.iconCategory.uilGift,
+    ExpenseType.TRANSPORTATION => Assets.iconCategory.uilCarSideview,
+    ExpenseType.SHOPPING => Assets.iconCategory.uilShoppingCart,
+    ExpenseType.HOME_APPLIANCES => Assets.iconCategory.uilHome,
+    ExpenseType.SPORT => Assets.iconCategory.uilBasketball,
+    ExpenseType.ENTERTAINMENT => Assets.iconCategory.uilClapperBoard,
   };
 
   // Convert string to ExpenseType

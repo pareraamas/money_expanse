@@ -44,7 +44,7 @@ class _CategoryGrid extends StatelessWidget {
                 if (index == categories.length) {
                   return _GridItem(
                     label: 'Buat baru',
-                    icon: const AppIllustration(AppIllustrations.buatBaru, size: 56),
+                    icon: AppIllustration(AppIllustrations.buatBaru, size: 56),
                     onTap: () async {
                       final created = await controller.openCreateCategory();
                       if (created && context.mounted) Navigator.of(context).pop();
