@@ -29,11 +29,7 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
             actions: [
               Obx(() {
                 if (!controller.isEditing) return const SizedBox(width: AppSpacing.minTouch);
-                return IconButton(
-                  icon: const Icon(AppIcons.trash),
-                  tooltip: 'Hapus transaksi',
-                  onPressed: () => _confirmDelete(context),
-                );
+                return IconButton(icon: const Icon(AppIcons.trash), tooltip: 'Hapus transaksi', onPressed: () => _confirmDelete(context));
               }),
               const SizedBox(width: AppSpacing.s4),
             ],
@@ -189,7 +185,10 @@ class _NoteField extends StatelessWidget {
           suffixIcon: const SizedBox(width: 20),
           border: none,
           enabledBorder: none,
-          focusedBorder: OutlineInputBorder(borderRadius: AppRadius.fullAll, borderSide: BorderSide(color: c.brand)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: AppRadius.fullAll,
+            borderSide: BorderSide(color: c.brand),
+          ),
           counterText: '',
         ),
       ),
@@ -292,12 +291,7 @@ class _BottomPanel extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.s8),
                 Expanded(
-                  child: Obx(
-                    () => FilledButton(
-                      onPressed: controller.isSaving.value ? null : controller.save,
-                      child: const Text('Simpan'),
-                    ),
-                  ),
+                  child: Obx(() => FilledButton(onPressed: controller.isSaving.value ? null : controller.save, child: const Text('Simpan'))),
                 ),
               ],
             ),

@@ -103,6 +103,15 @@ class FakeExpenseRepository implements ExpenseRepository {
   }
 
   @override
+  Future<void> importTransactions(List<Category> categories, List<Expense> expenses) async {
+    writes.add('importTransactions');
+    final catIds = {for (final c in this.categories) c.id};
+    this.categories.addAll(categories.where((c) => catIds.add(c.id)));
+    final ids = {for (final e in this.expenses) e.id};
+    this.expenses.addAll(expenses.where((e) => ids.add(e.id)).map((e) => e.copyWith()));
+  }
+
+  @override
   Future<int> clearDatabase() async {
     writes.add('clearDatabase');
     expenses.clear();

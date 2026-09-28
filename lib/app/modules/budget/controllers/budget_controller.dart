@@ -16,8 +16,7 @@ class BudgetController extends GetxController {
   double get totalSpent => spendingByCategory.values.fold(0.0, (a, b) => a + b);
 
   /// Pengeluaran hanya dari kategori yang punya budget (untuk kartu "Sisa").
-  double get budgetedSpent =>
-      budgetByCategory.keys.fold(0.0, (sum, id) => sum + (spendingByCategory[id] ?? 0));
+  double get budgetedSpent => budgetByCategory.keys.fold(0.0, (sum, id) => sum + (spendingByCategory[id] ?? 0));
 
   double get remaining => totalBudget - budgetedSpent;
 

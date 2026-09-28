@@ -23,10 +23,7 @@ class MainNavView extends GetView<MainNavController> {
             }
             return false;
           },
-          child: IndexedStack(
-            index: controller.selectedIndex.value,
-            children: const [HomeView(), BudgetView(), StatistikView()],
-          ),
+          child: IndexedStack(index: controller.selectedIndex.value, children: const [HomeView(), BudgetView(), StatistikView()]),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: _HidingFab(visible: controller.fabVisible.value, onPressed: controller.openCreateTransaction),

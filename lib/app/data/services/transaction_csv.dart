@@ -29,6 +29,15 @@ abstract final class TransactionCsv {
     return Csv.excel().encode(rows);
   }
 
+  /// Baris mentah (semua `String`) untuk import. Pemisah `,` `;` tab atau `|`
+  /// dideteksi otomatis, termasuk header `sep=;` dari Excel; BOM dibuang.
+  static List<List<Object?>> decode(String content) {
+    final text = content.startsWith('\uFEFF') ? content.substring(1) : content;
+    return [
+      for (final row in Csv().decode(text)) [for (final cell in row) cell?.toString()],
+    ];
+  }
+
   /// "2026-09-28 14:30" — urut secara teks dan tidak bergantung locale.
   static String formatDate(DateTime d) {
     String two(int n) => n.toString().padLeft(2, '0');

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -200,14 +201,16 @@ class ExpanseCreateController extends GetxController {
       log('Saving expense: ${expense.toDbMap()}');
 
       final message = isIncome ? 'Pemasukan tersimpan' : 'Pengeluaran tersimpan';
-      _celebrate(() => showAppSnackBar(
-            message,
-            actionLabel: 'Urungkan',
-            onAction: () async {
-              await repository.deleteExpense(expense.id!);
-              MainNavController.refreshAll();
-            },
-          ));
+      _celebrate(
+        () => showAppSnackBar(
+          message,
+          actionLabel: 'Urungkan',
+          onAction: () async {
+            await repository.deleteExpense(expense.id!);
+            MainNavController.refreshAll();
+          },
+        ),
+      );
     } catch (e) {
       log('Error saving expense: $e');
       showAppSnackBar('Gagal menyimpan. Coba lagi, ya.');

@@ -1,4 +1,5 @@
 import 'category_model.dart';
+
 import 'package:uuid/uuid.dart';
 
 class Expense {
@@ -28,26 +29,12 @@ class Expense {
     required DateTime dateTime,
     required double price,
   }) {
-    return Expense(
-      id: const Uuid().v4(),
-      name: name,
-      type: categoryId,
-      transactionType: transactionType,
-      dateTime: dateTime,
-      price: price,
-    );
+    return Expense(id: const Uuid().v4(), name: name, type: categoryId, transactionType: transactionType, dateTime: dateTime, price: price);
   }
 
   // Convert Expense to Map for database operations
   Map<String, dynamic> toDbMap() {
-    return {
-      'id': id,
-      'name': name,
-      'type': type,
-      'transaction_type': transactionType,
-      'date_time': dateTime.toIso8601String(),
-      'price': price,
-    };
+    return {'id': id, 'name': name, 'type': type, 'transaction_type': transactionType, 'date_time': dateTime.toIso8601String(), 'price': price};
   }
 
   // Create Expense from database map
@@ -76,26 +63,11 @@ class Expense {
 
   // Convert Expense to JSON
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'type': type,
-      'transaction_type': transactionType,
-      'date_time': dateTime.toIso8601String(),
-      'price': price,
-    };
+    return {'id': id, 'name': name, 'type': type, 'transaction_type': transactionType, 'date_time': dateTime.toIso8601String(), 'price': price};
   }
 
   // Copy with new values
-  Expense copyWith({
-    String? id,
-    String? name,
-    String? type,
-    Category? category,
-    String? transactionType,
-    DateTime? dateTime,
-    double? price,
-  }) {
+  Expense copyWith({String? id, String? name, String? type, Category? category, String? transactionType, DateTime? dateTime, double? price}) {
     return Expense(
       id: id ?? this.id,
       name: name ?? this.name,

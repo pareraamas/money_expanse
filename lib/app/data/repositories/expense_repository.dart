@@ -11,6 +11,11 @@ class ExpenseRepository {
     return await _databaseHelper.insertExpense(expense);
   }
 
+  // Save imported categories & transactions atomically
+  Future<void> importTransactions(List<Category> categories, List<Expense> expenses) async {
+    return _databaseHelper.importTransactions(categories, expenses);
+  }
+
   // Clear the database
   Future<int> clearDatabase() async {
     return await _databaseHelper.clearDatabase();

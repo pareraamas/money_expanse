@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_expense/app/data/services/transaction_export.dart';
 import 'package:money_expense/app/modules/home/controllers/home_controller.dart';
 import 'package:money_expense/app/theme/app_theme.dart';
 import 'package:money_expense/app/ui/ui.dart';
@@ -21,7 +22,22 @@ class StatistikView extends GetView<StatistikController> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              PageAppBar(title: 'Statistik', trailing: _monthSwitcher(context, month)),
+              PageAppBar(
+                title: 'Statistik',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _monthSwitcher(context, month),
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(AppIcons.dotsThreeVertical),
+                        tooltip: 'Export & bagikan',
+                        onPressed: () => _showExportSheet(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               ..._content(context),
               const SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
@@ -90,15 +106,6 @@ class StatistikView extends GetView<StatistikController> {
                 const SizedBox(height: AppSpacing.s8),
               ],
             ],
-            const SizedBox(height: AppSpacing.s16),
-            // Header sudah penuh (judul + pemilih bulan), jadi aksi export di akhir ringkasan.
-            Builder(
-              builder: (context) => OutlinedButton.icon(
-                onPressed: () => _showExportSheet(context),
-                icon: const Icon(AppIcons.shareNetwork),
-                label: const Text('Export & bagikan'),
-              ),
-            ),
           ],
         ),
       ),
@@ -106,14 +113,36 @@ class StatistikView extends GetView<StatistikController> {
   }
 }
 
-/// Pilihan export. [anchor] = tombol pemicu, jadi jangkar share sheet di iPad.
+/// Menu ⋮ Statistik: bagikan gambar, export (bulan terpilih / semua), dan
+/// import. [anchor] = tombol pemicu, jadi jangkar share sheet di iPad.
 void _showExportSheet(BuildContext anchor) {
-  final controller = Get.find<StatistikController>();
-  final box = anchor.findRenderObject() as RenderBox?;
-  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final month = AppFormat.monthYear(controller.selectedMonth.value);
+  AppSheet.show<void>(
+    anchor,
+    title: 'Export & bagikan',
+    child: _ExportSheet(origin: _originOf(anchor)),
+  );
+}
 
-  Widget option(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) => ListTile(
+Rect? _originOf(BuildContext context) {
+  final box = context.findRenderObject() as RenderBox?;
+  return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+}
+
+class _ExportSheet extends StatefulWidget {
+  const _ExportSheet({required this.origin});
+
+  final Rect? origin;
+
+  @override
+  State<_ExportSheet> createState() => _ExportSheetState();
+}
+
+class _ExportSheetState extends State<_ExportSheet> {
+  bool _allTime = false;
+
+  StatistikController get _controller => Get.find<StatistikController>();
+
+  Widget _option(IconData icon, String title, String subtitle, VoidCallback onTap) => ListTile(
     leading: Icon(icon, color: context.colors.brand),
     title: Text(title),
     subtitle: Text(subtitle, style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
@@ -124,28 +153,44 @@ void _showExportSheet(BuildContext anchor) {
     },
   );
 
-  AppSheet.show<void>(
-    anchor,
-    title: 'Export & bagikan',
-    child: Builder(
-      builder: (context) => SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            option(context, AppIcons.image, 'Bagikan sebagai gambar', 'Kartu ringkasan $month untuk Story atau Feed', controller.openShareCard),
-            option(context, AppIcons.fileCsv, 'Export CSV bulan ini', 'Transaksi $month', () => controller.exportCsv(origin: origin)),
-            option(
-              context,
-              AppIcons.fileCsv,
-              'Export CSV semua transaksi',
-              'Bisa dibuka di Excel atau Google Sheets',
-              () => controller.exportCsv(allTime: true, origin: origin),
-            ),
-          ],
-        ),
+  void _export(ExportFormat format) => _controller.export(format, allTime: _allTime, origin: widget.origin);
+
+  @override
+  Widget build(BuildContext context) {
+    final month = _controller.selectedMonth.value;
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _option(
+            AppIcons.image,
+            'Bagikan sebagai gambar',
+            'Kartu ringkasan ${AppFormat.monthYear(month)} untuk Story atau Feed',
+            _controller.openShareCard,
+          ),
+          const Divider(height: AppSpacing.s24),
+          Semantics(header: true, child: Text('Export data', style: context.text.titleSmall)),
+          const SizedBox(height: AppSpacing.s8),
+          SegmentedButton<bool>(
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(value: false, label: Text(AppFormat.monthYearShort(month))),
+              const ButtonSegment(value: true, label: Text('Semua')),
+            ],
+            selected: {_allTime},
+            onSelectionChanged: (s) => setState(() => _allTime = s.first),
+          ),
+          const SizedBox(height: AppSpacing.s4),
+          _option(AppIcons.fileXls, 'Excel (.xlsx)', 'Sheet transaksi + ringkasan per kategori', () => _export(ExportFormat.excel)),
+          _option(AppIcons.filePdf, 'Laporan PDF', 'Siap dicetak atau dikirim', () => _export(ExportFormat.pdf)),
+          _option(AppIcons.fileCsv, 'CSV', 'Untuk Google Sheets atau aplikasi lain', () => _export(ExportFormat.csv)),
+          const Divider(height: AppSpacing.s24),
+          _option(AppIcons.downloadSimple, 'Import dari CSV / Excel', 'Formatnya sama dengan file hasil export', _controller.pickImportFile),
+        ],
       ),
-    ),
-  );
+    );
+  }
 }
 
 Color _sliceColor(BuildContext context, DonutSlice s) => s.category?.color ?? context.colors.outline;

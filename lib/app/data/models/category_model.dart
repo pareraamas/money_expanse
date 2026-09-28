@@ -7,56 +7,23 @@ class Category {
   final int colorValue;
   final String icon;
 
-  Category({
-    required this.id,
-    required this.label,
-    required this.colorValue,
-    required this.icon,
-  });
+  Category({required this.id, required this.label, required this.colorValue, required this.icon});
 
   Color get color => Color(colorValue);
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'label': label,
-      'color_value': colorValue,
-      'icon': icon,
-    };
+    return {'id': id, 'label': label, 'color_value': colorValue, 'icon': icon};
   }
 
   factory Category.fromMap(Map<String, dynamic> map) {
-    return Category(
-      id: map['id'] as String,
-      label: map['label'] as String,
-      colorValue: map['color_value'] as int,
-      icon: map['icon'] as String,
-    );
+    return Category(id: map['id'] as String, label: map['label'] as String, colorValue: map['color_value'] as int, icon: map['icon'] as String);
   }
 
-  factory Category.create({
-    required String label,
-    required Color color,
-    required String icon,
-  }) {
-    return Category(
-      id: const Uuid().v4(),
-      label: label,
-      colorValue: color.toARGB32(),
-      icon: icon,
-    );
+  factory Category.create({required String label, required Color color, required String icon}) {
+    return Category(id: const Uuid().v4(), label: label, colorValue: color.toARGB32(), icon: icon);
   }
 
-  Category copyWith({
-    String? label,
-    Color? color,
-    String? icon,
-  }) {
-    return Category(
-      id: id,
-      label: label ?? this.label,
-      colorValue: color?.toARGB32() ?? colorValue,
-      icon: icon ?? this.icon,
-    );
+  Category copyWith({String? label, Color? color, String? icon}) {
+    return Category(id: id, label: label ?? this.label, colorValue: color?.toARGB32() ?? colorValue, icon: icon ?? this.icon);
   }
 }

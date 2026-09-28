@@ -15,12 +15,7 @@ class CategoryCreateView extends GetView<CategoryCreateController> {
       appBar: AppBar(
         title: Text(controller.isEditing ? 'Ubah Kategori' : 'Buat Kategori'),
         actions: [
-          if (controller.isEditing)
-            IconButton(
-              icon: const Icon(AppIcons.trash),
-              tooltip: 'Hapus kategori',
-              onPressed: () => _confirmDelete(context),
-            ),
+          if (controller.isEditing) IconButton(icon: const Icon(AppIcons.trash), tooltip: 'Hapus kategori', onPressed: () => _confirmDelete(context)),
           const SizedBox(width: AppSpacing.s4),
         ],
       ),
@@ -93,7 +88,10 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: AppSpacing.s8),
-    child: Semantics(header: true, child: Text(text, style: context.text.titleSmall?.copyWith(color: context.colors.inkMuted))),
+    child: Semantics(
+      header: true,
+      child: Text(text, style: context.text.titleSmall?.copyWith(color: context.colors.inkMuted)),
+    ),
   );
 }
 

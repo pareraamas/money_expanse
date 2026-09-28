@@ -5,6 +5,7 @@ import 'package:money_expense/app/data/models/expense.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/models/budget_model.dart';
+
 import 'dart:io';
 
 class DatabaseHelper {
@@ -51,12 +52,7 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
 
-    return await openDatabase(
-      path,
-      version: _databaseVersion,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -96,9 +92,7 @@ class DatabaseHelper {
     // Seed default categories
     for (var type in ExpenseType.values) {
       await db.insert(tableCategories, {
-        'id': type
-            .toShortString()
-            .toLowerCase(), // Use enum name as ID for migration compatibility
+        'id': type.toShortString().toLowerCase(), // Use enum name as ID for migration compatibility
         'label': type.label,
         'color_value': type.color.toARGB32(),
         'icon': type.icon,
@@ -129,82 +123,42 @@ class DatabaseHelper {
 
   Future<int> updateCategory(Category category) async {
     Database db = await database;
-    return await db.update(
-      tableCategories,
-      category.toMap(),
-      where: '$catId = ?',
-      whereArgs: [category.id],
-    );
+    return await db.update(tableCategories, category.toMap(), where: '$catId = ?', whereArgs: [category.id]);
   }
 
   Future<int> countExpensesByCategory(String categoryId) async {
     Database db = await database;
-    final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM $tableExpenses WHERE $columnType = ?',
-      [categoryId],
-    );
+    final result = await db.rawQuery('SELECT COUNT(*) as count FROM $tableExpenses WHERE $columnType = ?', [categoryId]);
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
   Future<int> deleteCategory(String categoryId) async {
     Database db = await database;
-    return await db.delete(
-      tableCategories,
-      where: '$catId = ?',
-      whereArgs: [categoryId],
-    );
+    return await db.delete(tableCategories, where: '$catId = ?', whereArgs: [categoryId]);
   }
 
   // --- Budget Methods ---
 
   Future<List<Budget>> getBudgetsForMonth(String yearMonth) async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(
-      tableBudgets,
-      where: '$budgetYearMonth = ?',
-      whereArgs: [yearMonth],
-    );
+    List<Map<String, dynamic>> maps = await db.query(tableBudgets, where: '$budgetYearMonth = ?', whereArgs: [yearMonth]);
     return List.generate(maps.length, (i) => Budget.fromMap(maps[i]));
   }
 
-  Future<void> setBudget(
-    String categoryId,
-    String yearMonth,
-    double amount,
-  ) async {
+  Future<void> setBudget(String categoryId, String yearMonth, double amount) async {
     Database db = await database;
-    final existing = await db.query(
-      tableBudgets,
-      where: '$budgetCategoryId = ? AND $budgetYearMonth = ?',
-      whereArgs: [categoryId, yearMonth],
-    );
+    final existing = await db.query(tableBudgets, where: '$budgetCategoryId = ? AND $budgetYearMonth = ?', whereArgs: [categoryId, yearMonth]);
 
     if (existing.isNotEmpty) {
-      await db.update(
-        tableBudgets,
-        {budgetAmount: amount},
-        where: '$budgetId = ?',
-        whereArgs: [existing.first[budgetId]],
-      );
+      await db.update(tableBudgets, {budgetAmount: amount}, where: '$budgetId = ?', whereArgs: [existing.first[budgetId]]);
     } else {
-      await db.insert(
-        tableBudgets,
-        Budget.create(
-          categoryId: categoryId,
-          yearMonth: yearMonth,
-          amount: amount,
-        ).toMap(),
-      );
+      await db.insert(tableBudgets, Budget.create(categoryId: categoryId, yearMonth: yearMonth, amount: amount).toMap());
     }
   }
 
   Future<int> deleteBudget(String categoryId, String yearMonth) async {
     Database db = await database;
-    return await db.delete(
-      tableBudgets,
-      where: '$budgetCategoryId = ? AND $budgetYearMonth = ?',
-      whereArgs: [categoryId, yearMonth],
-    );
+    return await db.delete(tableBudgets, where: '$budgetCategoryId = ? AND $budgetYearMonth = ?', whereArgs: [categoryId, yearMonth]);
   }
 
   // --- Expense Methods ---
@@ -212,6 +166,22 @@ class DatabaseHelper {
   Future<int> insertExpense(Expense expense) async {
     Database db = await database;
     return await db.insert(tableExpenses, expense.toDbMap());
+  }
+
+  /// Simpan hasil import dalam satu transaksi SQLite: gagal satu, batal semua.
+  /// Baris dengan ID yang sudah ada dilewati (bukan ditimpa).
+  Future<void> importTransactions(List<Category> categories, List<Expense> expenses) async {
+    Database db = await database;
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+      for (final c in categories) {
+        batch.insert(tableCategories, c.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+      }
+      for (final e in expenses) {
+        batch.insert(tableExpenses, e.toDbMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+      }
+      await batch.commit(noResult: true);
+    });
   }
 
   Future<List<Expense>> getExpenses({int limit = 10, int offset = 0}) async {
@@ -266,28 +236,15 @@ class DatabaseHelper {
 
   Future<int> updateExpense(Expense expense) async {
     Database db = await database;
-    return await db.update(
-      tableExpenses,
-      expense.toDbMap(),
-      where: '$columnId = ?',
-      whereArgs: [expense.id],
-    );
+    return await db.update(tableExpenses, expense.toDbMap(), where: '$columnId = ?', whereArgs: [expense.id]);
   }
 
   Future<int> deleteExpense(String id) async {
     Database db = await database;
-    return await db.delete(
-      tableExpenses,
-      where: '$columnId = ?',
-      whereArgs: [id],
-    );
+    return await db.delete(tableExpenses, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  Future<List<Expense>> getExpensesByDateRange(
-    DateTime start,
-    DateTime end, {
-    String? transactionType,
-  }) async {
+  Future<List<Expense>> getExpensesByDateRange(DateTime start, DateTime end, {String? transactionType}) async {
     Database db = await database;
     String whereClause = 'e.$columnDateTime BETWEEN ? AND ?';
     List<dynamic> whereArgs = [start.toIso8601String(), end.toIso8601String()];
@@ -318,9 +275,7 @@ class DatabaseHelper {
   }
 
   // Get total expenses by category label (using join)
-  Future<Map<String, double>> getExpensesByType({
-    String transactionType = 'expense',
-  }) async {
+  Future<Map<String, double>> getExpensesByType({String transactionType = 'expense'}) async {
     Database db = await database;
     List<Map<String, dynamic>> result = await db.rawQuery(
       '''
@@ -341,11 +296,7 @@ class DatabaseHelper {
   }
 
   // Get total spent per category id within a date range (for budget tracking)
-  Future<Map<String, double>> getSpendingByCategoryForRange(
-    DateTime start,
-    DateTime end, {
-    String transactionType = 'expense',
-  }) async {
+  Future<Map<String, double>> getSpendingByCategoryForRange(DateTime start, DateTime end, {String transactionType = 'expense'}) async {
     Database db = await database;
     List<Map<String, dynamic>> result = await db.rawQuery(
       '''
@@ -359,17 +310,12 @@ class DatabaseHelper {
 
     Map<String, double> spendingByCategory = {};
     for (var row in result) {
-      spendingByCategory[row['category_id'] as String] = (row['total'] as num)
-          .toDouble();
+      spendingByCategory[row['category_id'] as String] = (row['total'] as num).toDouble();
     }
     return spendingByCategory;
   }
 
-  Future<double> getTotalAmountByDateRange(
-    DateTime start,
-    DateTime end,
-    String transactionType,
-  ) async {
+  Future<double> getTotalAmountByDateRange(DateTime start, DateTime end, String transactionType) async {
     Database db = await database;
     List<Map<String, dynamic>> result = await db.rawQuery(
       '''

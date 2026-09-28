@@ -33,7 +33,11 @@ abstract final class AppIcons {
   static const moon = IconData(0xe330, fontFamily: _regular, fontPackage: _pkg);
   static const shareNetwork = IconData(0xe408, fontFamily: _regular, fontPackage: _pkg);
   static const image = IconData(0xe2ca, fontFamily: _regular, fontPackage: _pkg);
+  static const dotsThreeVertical = IconData(0xe208, fontFamily: _regular, fontPackage: _pkg);
   static const fileCsv = IconData(0xeb1c, fontFamily: _regular, fontPackage: _pkg);
+  static const fileXls = IconData(0xeb22, fontFamily: _regular, fontPackage: _pkg);
+  static const filePdf = IconData(0xe702, fontFamily: _regular, fontPackage: _pkg);
+  static const downloadSimple = IconData(0xe20c, fontFamily: _regular, fontPackage: _pkg);
 
   // Ikon berarah, ikut dicerminkan di bahasa RTL.
   static const caretLeft = IconData(0xe138, fontFamily: _regular, fontPackage: _pkg, matchTextDirection: true);

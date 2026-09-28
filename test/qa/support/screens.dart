@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:money_expense/app/data/services/transaction_import.dart';
+import 'package:money_expense/app/modules/import_preview/controllers/import_preview_controller.dart';
 import 'package:money_expense/app/routes/app_pages.dart';
 import 'package:money_expense/app/ui/gallery/component_gallery_page.dart';
 
@@ -46,6 +48,8 @@ final qaScreens = <QaScreen>[
   const QaScreen('sheet-export', route: Routes.MAIN_NAV, open: _openExportSheet),
   QaScreen('bagikan-gambar', route: Routes.SHARE_CARD, arguments: DateTime(2026, 9)),
   QaScreen('bagikan-gambar-feed', route: Routes.SHARE_CARD, arguments: DateTime(2026, 9), open: _feedHidden),
+  QaScreen('import-pratinjau', route: Routes.IMPORT_PREVIEW, arguments: _importArgs()),
+  QaScreen('import-kolom-hilang', route: Routes.IMPORT_PREVIEW, arguments: _importArgs(missingColumns: true)),
   // Fase 1: semua komponen inti sekaligus.
   QaScreen('galeri-komponen', page: () => const ComponentGalleryPage()),
 ];
@@ -55,13 +59,31 @@ Future<void> _statistik(WidgetTester t) => _tab(t, 'Statistik');
 
 Future<void> _openExportSheet(WidgetTester t) async {
   await _tab(t, 'Statistik');
-  await tapAny(t, [find.text('Export & bagikan')], what: 'tombol Export & bagikan');
+  await tapAny(t, [find.byTooltip('Export & bagikan')], what: 'menu Export & bagikan');
 }
 
 /// Format Feed + nominal disembunyikan.
 Future<void> _feedHidden(WidgetTester t) async {
   await tapAny(t, [find.text('Feed')], what: 'segmen Feed');
   await tapAny(t, [find.text('Sembunyikan nominal')], what: 'toggle Sembunyikan nominal');
+}
+
+/// File contoh: 6 baris baru (1 kategori baru), 1 duplikat tx-05, 1 baris rusak.
+ImportPreviewArgs _importArgs({bool missingColumns = false}) {
+  var n = 0;
+  final importer = TransactionImporter(categories: seedCategories(), existing: sampleExpenses(), newId: () => 'imp-${++n}');
+  final rows = <List<Object?>>[
+    missingColumns ? ['Nama', 'Harga'] : ['Tanggal', 'Jenis', 'Kategori', 'Nama', 'Jumlah'],
+    ['2026-09-26 08:00', 'Pengeluaran', 'Makanan', 'Sarapan', '20.000'],
+    ['2026-09-26 12:00', 'Pengeluaran', 'Makanan', 'Makan siang kantor', '35000'],
+    ['2026-09-26 19:00', 'Pengeluaran', 'Langganan', 'Streaming', 'Rp 54.990'],
+    ['2026-09-27 07:30', 'Pengeluaran', 'Transport', 'KRL', '6000'],
+    ['2026-09-27 10:00', 'Pemasukan', 'Hadiah', 'Arisan', '500.000'],
+    ['2026-09-27 21:00', 'Pengeluaran', 'Hiburan', 'Karaoke', '150.000'],
+    ['2026-09-25 12:15', 'Pengeluaran', 'Makanan', 'Makan siang', '45000'],
+    ['kemarin', 'Pengeluaran', 'Makanan', 'Kopi', '18000'],
+  ];
+  return ImportPreviewArgs('mutasi-september.csv', importer.parse(rows));
 }
 
 /// Nama tampilan ringkas untuk pesan kegagalan.

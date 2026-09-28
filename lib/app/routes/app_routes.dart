@@ -11,6 +11,7 @@ abstract class Routes {
   static const CATEGORY_CREATE = _Paths.CATEGORY_CREATE;
   static const CATEGORY_LIST = _Paths.CATEGORY_LIST;
   static const SHARE_CARD = _Paths.SHARE_CARD;
+  static const IMPORT_PREVIEW = _Paths.IMPORT_PREVIEW;
 }
 
 abstract class _Paths {
@@ -23,4 +24,5 @@ abstract class _Paths {
   static const CATEGORY_CREATE = '/category-create';
   static const CATEGORY_LIST = '/category-list';
   static const SHARE_CARD = '/share-card';
+  static const IMPORT_PREVIEW = '/import-preview';
 }

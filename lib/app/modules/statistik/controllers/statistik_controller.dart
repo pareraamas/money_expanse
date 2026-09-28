@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:get/get.dart';
@@ -6,6 +7,13 @@ import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
 import 'package:money_expense/app/data/services/share_service.dart';
 import 'package:money_expense/app/data/services/transaction_csv.dart';
+import 'package:money_expense/app/data/services/transaction_export.dart';
+import 'package:money_expense/app/data/services/transaction_import.dart';
+import 'package:money_expense/app/data/services/transaction_report.dart';
+import 'package:money_expense/app/data/services/transaction_xlsx.dart';
+import 'package:money_expense/app/modules/import_preview/controllers/import_preview_controller.dart';
+import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:money_expense/app/routes/app_pages.dart';
 import 'package:money_expense/app/widgets/app_snackbar.dart';
 
@@ -86,8 +94,9 @@ class StatistikController extends GetxController {
   void openShareCard() => Get.toNamed(Routes.SHARE_CARD, arguments: selectedMonth.value);
 
   /// Export transaksi bulan terpilih, atau semua transaksi bila [allTime].
-  Future<void> exportCsv({bool allTime = false, Rect? origin}) async {
+  Future<void> export(ExportFormat format, {bool allTime = false, Rect? origin}) async {
     final month = selectedMonth.value;
+    final period = allTime ? const ReportPeriod.allTime() : ReportPeriod.month(month);
     final expenses = allTime
         ? await _repository.getExpensesByDateRange(DateTime(2000), DateTime(2100))
         : await _repository.getExpensesForMonth(month);
@@ -95,12 +104,49 @@ class StatistikController extends GetxController {
       showAppSnackBar('Belum ada transaksi untuk diekspor.');
       return;
     }
-    final ordered = expenses.reversed.toList(); // lama → baru, seperti buku kas
-    final name = allTime ? 'transaksi-semua' : 'transaksi-${TransactionCsv.formatDate(month).substring(0, 7)}';
     try {
-      await Get.find<ShareService>().shareCsv(TransactionCsv.encode(ordered), '$name.csv', origin: origin);
+      final file = await TransactionExport.build(format, expenses, period);
+      await Get.find<ShareService>().shareExport(file, origin: origin);
     } catch (_) {
-      showAppSnackBar('Gagal mengekspor CSV. Coba lagi.');
+      showAppSnackBar('Gagal mengekspor file. Coba lagi.');
+    }
+  }
+
+  // --- Import ---
+
+  /// Pilih file CSV/Excel, baca, lalu buka layar pratinjau. Data baru
+  /// tersimpan setelah pengguna menekan "Impor" di pratinjau.
+  Future<void> pickImportFile() async {
+    final List<PlatformFile> picked;
+    try {
+      picked = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: const ['csv', 'xlsx']);
+    } catch (_) {
+      showAppSnackBar('Tidak bisa membuka pemilih file.');
+      return;
+    }
+    if (picked.isEmpty) return;
+    final file = picked.first;
+
+    final ImportPlan plan;
+    try {
+      final bytes = await file.xFile.readAsBytes();
+      final rows = file.extension?.toLowerCase() == 'xlsx'
+          ? TransactionXlsx.decode(bytes)
+          : TransactionCsv.decode(utf8.decode(bytes, allowMalformed: true));
+      final importer = TransactionImporter(
+        categories: await _repository.getCategories(),
+        existing: await _repository.getExpensesByDateRange(DateTime(1900), DateTime(2200)),
+      );
+      plan = importer.parse(rows);
+    } catch (_) {
+      showAppSnackBar('File tidak bisa dibaca. Pastikan formatnya CSV atau Excel (.xlsx).');
+      return;
+    }
+
+    final imported = await Get.toNamed(Routes.IMPORT_PREVIEW, arguments: ImportPreviewArgs(file.name, plan));
+    if (imported is int && imported > 0) {
+      MainNavController.refreshAll();
+      showAppSnackBar('$imported transaksi berhasil diimpor.');
     }
   }
 }
