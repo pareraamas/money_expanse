@@ -7,7 +7,7 @@ class CategoryListController extends GetxController {
   final ExpenseRepository _repository = Get.find<ExpenseRepository>();
 
   final categories = <Category>[].obs;
-  final isLoading = false.obs;
+  final isLoading = true.obs;
 
   @override
   void onInit() {
@@ -16,7 +16,6 @@ class CategoryListController extends GetxController {
   }
 
   Future<void> loadCategories() async {
-    isLoading.value = true;
     final fetched = await _repository.getCategories();
     categories.assignAll(fetched);
     isLoading.value = false;
@@ -24,11 +23,11 @@ class CategoryListController extends GetxController {
 
   Future<void> goToCreate() async {
     final result = await Get.toNamed(Routes.CATEGORY_CREATE);
-    if (result == true) loadCategories();
+    if (result != null) loadCategories();
   }
 
   Future<void> goToEdit(Category category) async {
     final result = await Get.toNamed(Routes.CATEGORY_CREATE, arguments: category);
-    if (result == true) loadCategories();
+    if (result != null) loadCategories();
   }
 }

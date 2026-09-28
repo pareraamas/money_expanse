@@ -48,6 +48,9 @@ dependencies:
   pull_to_refresh: ^2.0.0
   uuid: ^4.6.0
   fl_chart: ^1.2.0
+  flutter_animate: ^4.5.2
+  lottie: ^3.3.3
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +91,10 @@ flutter:
   # Assets configuration
   assets:
     - assets/
+    - assets/illustrations/
+    - assets/illustrations/dompi/
+    - assets/illustrations/empty/
+    - assets/lottie/
 
   fonts:
     - family: PlusJakartaSans

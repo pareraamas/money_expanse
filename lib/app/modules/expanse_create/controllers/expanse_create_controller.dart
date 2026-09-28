@@ -1,96 +1,250 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:money_expense/app/ults/clock.dart';
 import 'package:intl/intl.dart';
 import 'package:money_expense/app/data/models/expense.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/ults/string_currency_parsing.dart';
+import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:money_expense/app/widgets/app_snackbar.dart';
 
 class ExpanseCreateController extends GetxController {
-  final formKey = GlobalKey<FormState>();
   final ExpenseRepository repository = Get.find<ExpenseRepository>();
 
-  // Text editing controllers
+  /// Batas nominal (12 digit, Rp 999 miliar) agar teks tidak meluap.
+  static const maxAmount = 999999999999;
+
+  /// Jumlah chip kategori terakhir di atas tombol "Semua".
+  static const recentCount = 5;
+
+  /// Catatan opsional (kolom `name`). Kosong → pakai nama kategori.
   late TextEditingController nameController;
-  late TextEditingController typeController;
-  late TextEditingController dateController;
-  late TextEditingController priceController;
 
-  // Selected date
-  final selectedDate = DateTime.now().obs;
-
-  // Selected category
+  final selectedDate = Clock.now().obs;
   final selectedCategory = Rxn<Category>();
-  
-  // Available categories
   final categories = <Category>[].obs;
+  final recentCategories = <Category>[].obs;
 
-  // transaction type
+  /// Nominal dalam rupiah bulat, diisi lewat keypad.
+  final amount = 0.obs;
+
   final transactionType = 'expense'.obs; // 'income' or 'expense'
 
-  // arg
+  /// ID transaksi yang sedang diubah; kosong = tambah baru.
   final arg = "".obs;
+
+  final isSaving = false.obs;
+
+  /// True sesaat setelah tersimpan: view memutar centang + Dompi senang,
+  /// lalu memanggil [finishSave] untuk menutup form.
+  final justSaved = false.obs;
+  Timer? _closeFallback;
+  VoidCallback? _afterClose;
+
+  /// Pesan validasi inline di bawah nominal / kategori.
+  final amountError = RxnString();
+  final categoryError = RxnString();
+
+  bool get isEditing => arg.value.isNotEmpty;
+  bool get isIncome => transactionType.value == 'income';
+
+  String get title => '${isEditing ? 'Ubah' : 'Tambah'} ${isIncome ? 'Pemasukan' : 'Pengeluaran'}';
+
+  String get dateLabel => DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(selectedDate.value);
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize controllers
     nameController = TextEditingController();
-    typeController = TextEditingController();
-    dateController = TextEditingController();
-    priceController = TextEditingController();
-    
     _loadCategories();
   }
 
-  Future<void> _loadCategories() async {
-    final fetchedCategories = await repository.getCategories();
-    categories.assignAll(fetchedCategories);
-    if (categories.isNotEmpty && selectedCategory.value == null) {
-      selectedCategory.value = categories.first;
-      typeController.text = categories.first.label;
+  @override
+  void onReady() {
+    final data = Get.arguments as String?;
+    if (data != null) {
+      arg.value = data;
+      onGetByid(data);
     }
+    super.onReady();
   }
 
   @override
   void onClose() {
-    // Dispose controllers to prevent memory leaks
+    _closeFallback?.cancel();
     nameController.dispose();
-    typeController.dispose();
-    dateController.dispose();
-    priceController.dispose();
     super.onClose();
   }
 
-  // Method to handle form submission
-  void submitForm() {
-    if (formKey.currentState!.validate() && selectedCategory.value != null) {
-      try {
-        final expense = Expense.create(
-          name: nameController.text.trim(),
-          categoryId: selectedCategory.value!.id,
-          transactionType: transactionType.value,
-          dateTime: selectedDate.value,
-          price: priceController.text.toDoubleFromRupiah(),
-        );
-
-        repository.insertExpense(expense);
-
-        log('Saving expense: ${expense.toDbMap()}');
-        Get.back(result: true);
-        Get.snackbar(
-          'Berhasil',
-          'Data transaksi berhasil disimpan',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-      } catch (e) {
-        log('Error saving expense: $e');
-        Get.snackbar('Error', 'Gagal menyimpan data: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
-      }
+  Future<void> _loadCategories() async {
+    categories.assignAll(await repository.getCategories());
+    await _loadRecentCategories();
+    if (!isEditing && selectedCategory.value == null && recentCategories.isNotEmpty) {
+      selectedCategory.value = recentCategories.first;
     }
+  }
+
+  /// Kategori yang paling baru dipakai, dilengkapi urutan default bila kurang.
+  Future<void> _loadRecentCategories() async {
+    final latest = await repository.getExpenses(limit: 30);
+    final ids = <String>{};
+    for (final e in latest) {
+      ids.add(e.type);
+      if (ids.length == recentCount) break;
+    }
+    final byId = {for (final c in categories) c.id: c};
+    final result = [for (final id in ids) ?byId[id]];
+    for (final c in categories) {
+      if (result.length >= recentCount) break;
+      if (!result.contains(c)) result.add(c);
+    }
+    recentCategories.assignAll(result);
+  }
+
+  /// Dipanggil setelah kembali dari Kelola/Buat Kategori agar kategori baru langsung muncul.
+  Future<void> reloadCategories() async {
+    categories.assignAll(await repository.getCategories());
+    final current = selectedCategory.value;
+    if (current != null) {
+      // Label/warna bisa berubah; hilang jika kategorinya dihapus.
+      selectedCategory.value = categories.firstWhereOrNull((c) => c.id == current.id);
+    }
+    await _loadRecentCategories();
+  }
+
+  /// True jika kategori baru dibuat (dan langsung terpilih).
+  Future<bool> openCreateCategory() async {
+    final result = await Get.toNamed(Routes.CATEGORY_CREATE);
+    if (result is Category) {
+      await reloadCategories();
+      selectCategory(categories.firstWhereOrNull((c) => c.id == result.id) ?? result);
+      return true;
+    }
+    if (result == true) await reloadCategories();
+    return false;
+  }
+
+  Future<void> openManageCategories() async {
+    await Get.toNamed(Routes.CATEGORY_LIST);
+    await reloadCategories();
+  }
+
+  void setType(String type) => transactionType.value = type;
+
+  void selectCategory(Category category) {
+    selectedCategory.value = category;
+    categoryError.value = null;
+    // Kategori dari "Semua" ikut tampil sebagai chip agar terlihat terpilih.
+    if (!recentCategories.any((c) => c.id == category.id)) {
+      recentCategories
+        ..insert(0, category)
+        ..removeRange(recentCount.clamp(0, recentCategories.length), recentCategories.length);
+    }
+  }
+
+  void setDate(DateTime date) {
+    final t = selectedDate.value;
+    // Jam lama dipertahankan agar urutan riwayat dalam satu hari tidak berubah.
+    selectedDate.value = DateTime(date.year, date.month, date.day, t.hour, t.minute, t.second);
+  }
+
+  // --- Keypad ---
+
+  void onAmountChanged(int value) {
+    amount.value = value.clamp(0, maxAmount);
+    if (amount.value > 0) amountError.value = null;
+  }
+
+  bool _validate() {
+    amountError.value = amount.value <= 0 ? 'Masukkan nominal dulu' : null;
+    categoryError.value = selectedCategory.value == null ? 'Pilih kategori' : null;
+    return amountError.value == null && categoryError.value == null;
+  }
+
+  String get _name {
+    final note = nameController.text.trim();
+    return note.isNotEmpty ? note : selectedCategory.value!.label;
+  }
+
+  Future<void> save() => isEditing ? onUpdateSubmit() : submitForm();
+
+  Future<void> submitForm() async {
+    if (isSaving.value || justSaved.value || !_validate()) return;
+    isSaving.value = true;
+    try {
+      final expense = Expense.create(
+        name: _name,
+        categoryId: selectedCategory.value!.id,
+        transactionType: transactionType.value,
+        dateTime: selectedDate.value,
+        price: amount.value.toDouble(),
+      );
+
+      await repository.insertExpense(expense);
+      log('Saving expense: ${expense.toDbMap()}');
+
+      final message = isIncome ? 'Pemasukan tersimpan' : 'Pengeluaran tersimpan';
+      _celebrate(() => showAppSnackBar(
+            message,
+            actionLabel: 'Urungkan',
+            onAction: () async {
+              await repository.deleteExpense(expense.id!);
+              MainNavController.refreshAll();
+            },
+          ));
+    } catch (e) {
+      log('Error saving expense: $e');
+      showAppSnackBar('Gagal menyimpan. Coba lagi, ya.');
+    } finally {
+      isSaving.value = false;
+    }
+  }
+
+  Future<void> onUpdateSubmit() async {
+    if (isSaving.value || justSaved.value || !_validate()) return;
+    isSaving.value = true;
+    try {
+      final updatedExpense = Expense(
+        id: arg.value,
+        name: _name,
+        type: selectedCategory.value!.id,
+        transactionType: transactionType.value,
+        dateTime: selectedDate.value,
+        price: amount.value.toDouble(),
+      );
+
+      await repository.updateExpense(updatedExpense);
+      log('Updating expense: ${updatedExpense.toDbMap()}');
+
+      _celebrate(() => showAppSnackBar('Perubahan tersimpan'));
+    } catch (e) {
+      log('Error updating expense: $e');
+      showAppSnackBar('Gagal menyimpan perubahan. Coba lagi, ya.');
+    } finally {
+      isSaving.value = false;
+    }
+  }
+
+  void _celebrate(VoidCallback afterClose) {
+    HapticFeedback.lightImpact();
+    _afterClose = afterClose;
+    justSaved.value = true;
+    // Jaga-jaga bila animasi tidak memanggil balik (mis. aset gagal dimuat).
+    _closeFallback = Timer(const Duration(milliseconds: 1600), finishSave);
+  }
+
+  /// Menutup form setelah momen sukses. Aman dipanggil lebih dari sekali.
+  void finishSave() {
+    if (!justSaved.value) return;
+    justSaved.value = false;
+    _closeFallback?.cancel();
+    Get.back(result: true);
+    _afterClose?.call();
+    _afterClose = null;
   }
 
   Future<bool> deleteExpanse() async {
@@ -102,75 +256,28 @@ class ExpanseCreateController extends GetxController {
     }
   }
 
-  Future<void> onUpdateSubmit() async {
-    if (formKey.currentState!.validate() && arg.value.isNotEmpty && selectedCategory.value != null) {
-      try {
-        final price = priceController.text.toDoubleFromRupiah();
-
-        final updatedExpense = Expense(
-          id: arg.value,
-          name: nameController.text.trim(),
-          type: selectedCategory.value!.id,
-          transactionType: transactionType.value,
-          dateTime: selectedDate.value,
-          price: price,
-        );
-
-        await repository.updateExpense(updatedExpense);
-
-        log('Updating expense: ${updatedExpense.toDbMap()}');
-        Get.back(result: true);
-        Get.snackbar(
-          'Berhasil',
-          'Data transaksi berhasil diperbarui',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-      } catch (e) {
-        log('Error updating expense: $e');
-        Get.snackbar('Error', 'Gagal memperbarui data: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
-      }
-    }
-  }
-
   Future<void> onGetByid(String id) async {
     try {
       final expense = await repository.getExpense(id);
-      if (expense != null) {
-        nameController.text = expense.name;
-        priceController.text = expense.price.toRupiahString();
-        
-        // Wait for categories to load if not already
-        if (categories.isEmpty) await _loadCategories();
-        
-        final cat = categories.firstWhereOrNull((c) => c.id == expense.type);
-        if (cat != null) {
-          selectedCategory.value = cat;
-          typeController.text = cat.label;
-        }
-        
-        dateController.text = DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(expense.dateTime);
-        selectedDate.value = expense.dateTime;
-        transactionType.value = expense.transactionType;
-      } else {
+      if (expense == null) {
         Get.back();
-        Get.snackbar('Error', 'Data transaksi tidak ditemukan', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+        showAppSnackBar('Transaksi tidak ditemukan');
+        return;
       }
+
+      if (categories.isEmpty) await _loadCategories();
+
+      transactionType.value = expense.transactionType;
+      amount.value = expense.price.round();
+      selectedDate.value = expense.dateTime;
+      final cat = categories.firstWhereOrNull((c) => c.id == expense.type);
+      if (cat != null) selectCategory(cat);
+      // Catatan lama yang sama dengan nama kategori dianggap kosong.
+      nameController.text = expense.name == cat?.label ? '' : expense.name;
     } catch (e) {
       log('Error loading expense: $e');
       Get.back();
-      Get.snackbar('Error', 'Gagal memuat data transaksi: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      showAppSnackBar('Gagal memuat transaksi');
     }
-  }
-
-  @override
-  void onReady() {
-    final data = Get.arguments as String?;
-    if (data != null) {
-      arg.value = data;
-      onGetByid(data);
-    }
-    super.onReady();
   }
 }

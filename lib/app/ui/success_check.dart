@@ -1,0 +1,67 @@
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+
+import '../theme/app_theme.dart';
+import 'app_icons.dart';
+import 'app_illustration.dart';
+
+/// Centang sukses kecil (Lottie) untuk momen "Tersimpan".
+///
+/// Diputar sekali. Saat animasi sistem dimatikan, langsung tampil frame
+/// terakhir. Bila aset Lottie gagal dimuat, tampil ikon centang biasa.
+class SuccessCheck extends StatefulWidget {
+  const SuccessCheck({super.key, this.size = 72, this.semanticLabel = 'Tersimpan', this.onCompleted});
+
+  final double size;
+  final String semanticLabel;
+  final VoidCallback? onCompleted;
+
+  @override
+  State<SuccessCheck> createState() => _SuccessCheckState();
+}
+
+class _SuccessCheckState extends State<SuccessCheck> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(vsync: this);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onLoaded(LottieComposition composition) {
+    if (!mounted) return;
+    if (AppMotion.reduced(context)) {
+      _controller.value = 1;
+      widget.onCompleted?.call();
+      return;
+    }
+    _controller
+      ..duration = composition.duration
+      ..forward(from: 0).whenCompleteOrCancel(() {
+        if (mounted) widget.onCompleted?.call();
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = Icon(AppIconsFill.checkCircle, size: widget.size, color: context.colors.income);
+    return Semantics(
+      label: widget.semanticLabel,
+      liveRegion: true,
+      child: ExcludeSemantics(
+        child: SizedBox.square(
+          dimension: widget.size,
+          child: Lottie.asset(
+            AppIllustrations.successCheck,
+            controller: _controller,
+            width: widget.size,
+            height: widget.size,
+            onLoaded: _onLoaded,
+            errorBuilder: (_, _, _) => fallback,
+          ),
+        ),
+      ),
+    );
+  }
+}

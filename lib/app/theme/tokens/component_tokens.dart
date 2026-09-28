@@ -28,7 +28,8 @@ class AppComponentTokens extends ThemeExtension<AppComponentTokens> {
     amountText: AmountTextTokens(income: c.income, expense: c.expense, neutral: c.ink),
     categoryBlob: const CategoryBlobTokens(tintOpacity: 0.15, sizeSmall: 32, sizeMedium: 40, sizeLarge: 56, iconScale: 0.55),
     keypadKey: KeypadKeyTokens(
-      background: c.surfaceContainerLow,
+      // Lebih gelap dari latar sheet (surfaceContainerLow) agar tombol tetap terlihat.
+      background: c.surfaceContainerHigh,
       foreground: c.ink,
       pressed: c.surfaceContainerHighest,
       actionForeground: c.brand,

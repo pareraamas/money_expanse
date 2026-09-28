@@ -1,0 +1,8 @@
+# Tag untuk suite QA redesign (test/qa/).
+#   flutter test                      semua
+#   flutter test -t gerbang           hanya gerbang QA (grep token, a11y, teks 200%)
+#   flutter test -x golden            tanpa golden
+tags:
+  qa:
+  golden:
+  gerbang:

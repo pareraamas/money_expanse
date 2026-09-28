@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:money_expense/app/theme/app_theme.dart';
+import 'package:money_expense/app/ui/ui.dart';
 
 import '../controllers/category_list_controller.dart';
 
@@ -10,23 +11,17 @@ class CategoryListView extends GetView<CategoryListController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Kelola Kategori',
-          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      appBar: AppBar(title: const Text('Kelola Kategori')),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-kategori',
+        tooltip: 'Buat kategori',
         onPressed: controller.goToCreate,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(AppIcons.plus, size: 28),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonList(itemCount: 6, padding: EdgeInsets.all(AppSpacing.page));
         }
         return RefreshIndicator(
           onRefresh: controller.loadCategories,
@@ -34,32 +29,24 @@ class CategoryListView extends GetView<CategoryListController> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               if (controller.categories.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: Text('Belum ada kategori')),
-                )
+                SliverFillRemaining(hasScrollBody: false, child: EmptyState.kategori(onAction: controller.goToCreate))
               else
                 SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        if (index.isOdd) return const SizedBox(height: 8);
-                        final category = controller.categories[index ~/ 2];
-                        return ListTile(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s8, AppSpacing.page, 96),
+                  sliver: SliverList.separated(
+                    itemCount: controller.categories.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.s8),
+                    itemBuilder: (context, index) {
+                      final category = controller.categories[index];
+                      return Card(
+                        child: ListTile(
                           onTap: () => controller.goToEdit(category),
-                          leading: CircleAvatar(
-                            backgroundColor: category.color,
-                            child: SvgPicture.asset(category.icon, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn), width: 20, height: 20),
-                          ),
+                          leading: CategoryBlob(iconAsset: category.icon, color: category.color),
                           title: Text(category.label),
-                          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                          tileColor: Colors.grey[100],
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        );
-                      },
-                      childCount: controller.categories.length * 2 - 1,
-                    ),
+                          trailing: Icon(AppIcons.caretRight, color: context.colors.inkMuted, semanticLabel: 'Ubah'),
+                        ),
+                      );
+                    },
                   ),
                 ),
             ],

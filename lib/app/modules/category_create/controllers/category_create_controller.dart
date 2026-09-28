@@ -1,40 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
+import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/gen/assets.gen.dart';
+import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:money_expense/app/widgets/app_snackbar.dart';
 
 class CategoryCreateController extends GetxController {
   final labelController = TextEditingController();
 
-  static const availableColors = <Color>[
-    Color(0xfff2c94c),
-    Color(0xff56CCF2),
-    Color(0xffF2994A),
-    Color(0xffEB5757),
-    Color(0xff9B51E0),
-    Color(0xff27AE60),
-    Color(0xffBB6BD9),
-    Color(0xff2D9CDB),
-    Color(0xff2F80ED),
-  ];
+  static const maxLabelLength = 24;
 
-  static const availableIcons = <String>[
-    Assets.uilPizzaSlice,
-    Assets.uilRssAlt,
-    Assets.uilBookOpen,
-    Assets.uilGift,
-    Assets.uilCarSideview,
-    Assets.uilShoppingCart,
-    Assets.uilHome,
-    Assets.uilBasketball,
-    Assets.uilClapperBoard,
-  ];
+  /// 9 warna & 9 ikon sama persis dengan kategori bawaan (disimpan di SQLite).
+  static final availableColors = [for (final t in ExpenseType.values) t.color];
+  static final availableIcons = [for (final t in ExpenseType.values) t.icon];
 
   late final Rx<Color> selectedColor;
   late final RxString selectedIcon;
 
   final isLoading = false.obs;
+  final labelError = RxnString();
+  final label = ''.obs;
   final ExpenseRepository _repository = Get.find<ExpenseRepository>();
 
   Category? editingCategory;
@@ -53,6 +39,8 @@ class CategoryCreateController extends GetxController {
       selectedColor = availableColors.first.obs;
       selectedIcon = availableIcons.first.obs;
     }
+    label.value = labelController.text;
+    labelController.addListener(_onLabelChanged);
   }
 
   @override
@@ -61,24 +49,19 @@ class CategoryCreateController extends GetxController {
     super.onClose();
   }
 
-  void selectColor(Color color) {
-    selectedColor.value = color;
+  void _onLabelChanged() {
+    label.value = labelController.text;
+    if (labelError.value != null && label.value.trim().isNotEmpty) labelError.value = null;
   }
 
-  void selectIcon(String icon) {
-    selectedIcon.value = icon;
-    update();
-  }
+  void selectColor(Color color) => selectedColor.value = color;
+
+  void selectIcon(String icon) => selectedIcon.value = icon;
 
   Future<void> saveCategory() async {
-    if (labelController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Nama Kategori tidak boleh kosong',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+    final name = labelController.text.trim();
+    if (name.isEmpty) {
+      labelError.value = 'Beri nama kategorinya dulu';
       return;
     }
 
@@ -86,76 +69,45 @@ class CategoryCreateController extends GetxController {
       isLoading.value = true;
 
       if (isEditing) {
-        final updatedCategory = editingCategory!.copyWith(
-          label: labelController.text.trim(),
-          color: selectedColor.value,
-          icon: selectedIcon.value,
-        );
+        final updatedCategory = editingCategory!.copyWith(label: name, color: selectedColor.value, icon: selectedIcon.value);
         await _repository.updateCategory(updatedCategory);
+        MainNavController.refreshAll();
+        Get.back(result: true);
+        showAppSnackBar('Kategori diperbarui');
       } else {
-        final newCategory = Category.create(
-          label: labelController.text.trim(),
-          color: selectedColor.value,
-          icon: selectedIcon.value,
-        );
+        final newCategory = Category.create(label: name, color: selectedColor.value, icon: selectedIcon.value);
         await _repository.insertCategory(newCategory);
+        // Kembalikan kategori baru agar form transaksi bisa langsung memilihnya.
+        Get.back(result: newCategory);
+        showAppSnackBar('Kategori "$name" siap dipakai');
       }
-
-      Get.back(result: true);
-      Get.snackbar(
-        'Sukses',
-        isEditing ? 'Kategori berhasil diperbarui' : 'Kategori berhasil ditambahkan',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menyimpan kategori. Silakan coba lagi.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showAppSnackBar('Gagal menyimpan kategori. Coba lagi, ya.');
     } finally {
       isLoading.value = false;
     }
   }
+
+  /// Jumlah transaksi yang masih memakai kategori ini (0 = boleh dihapus).
+  Future<int> usageCount() async => isEditing ? _repository.countExpensesByCategory(editingCategory!.id) : 0;
 
   Future<void> deleteCategory() async {
     if (!isEditing) return;
 
     try {
       isLoading.value = true;
-      final usageCount = await _repository.countExpensesByCategory(editingCategory!.id);
-      if (usageCount > 0) {
-        Get.snackbar(
-          'Tidak Bisa Dihapus',
-          'Kategori ini masih digunakan oleh $usageCount transaksi',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+      // Guard tetap di sini (bukan hanya di view) agar transaksi tidak jadi yatim.
+      final used = await usageCount();
+      if (used > 0) {
+        showAppSnackBar('Kategori ini masih dipakai $used transaksi. Pindahkan dulu transaksinya, ya.');
         return;
       }
-
       await _repository.deleteCategory(editingCategory!.id);
+      MainNavController.refreshAll();
       Get.back(result: true);
-      Get.snackbar(
-        'Sukses',
-        'Kategori berhasil dihapus',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      showAppSnackBar('Kategori dihapus');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menghapus kategori. Silakan coba lagi.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showAppSnackBar('Gagal menghapus kategori. Coba lagi, ya.');
     } finally {
       isLoading.value = false;
     }

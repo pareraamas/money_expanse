@@ -1,8 +1,9 @@
 import 'package:intl/intl.dart';
+import 'clock.dart';
 
 extension DateTimeExtension on DateTime {
   String toHumanReadable() {
-    final now = DateTime.now();
+    final now = Clock.now();
     final today = DateTime(now.year, now.month, now.day);
     final target = DateTime(year, month, day);
 

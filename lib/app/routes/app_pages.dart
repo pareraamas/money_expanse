@@ -27,7 +27,7 @@ class AppPages {
     GetPage(name: _Paths.HOME, page: () => const HomeView(), binding: HomeBinding()),
     GetPage(name: _Paths.BUDGET, page: () => const BudgetView(), binding: BudgetBinding()),
     GetPage(name: _Paths.STATISTIK, page: () => const StatistikView(), binding: StatistikBinding()),
-    GetPage(name: _Paths.EXPANSE_CREATE, page: () => const ExpanseCreateView(), binding: ExpanseCreateBinding()),
+    GetPage(name: _Paths.EXPANSE_CREATE, page: () => const ExpanseCreateView(), binding: ExpanseCreateBinding(), fullscreenDialog: true),
     GetPage(name: _Paths.CATEGORY_CREATE, page: () => const CategoryCreateView(), binding: CategoryCreateBinding()),
     GetPage(name: _Paths.CATEGORY_LIST, page: () => const CategoryListView(), binding: CategoryListBinding()),
   ];

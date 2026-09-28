@@ -1,10 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/theme/app_color.dart';
-import 'package:money_expense/app/ults/string_currency_parsing.dart';
+import 'package:money_expense/app/modules/home/controllers/home_controller.dart';
+import 'package:money_expense/app/theme/app_theme.dart';
+import 'package:money_expense/app/ui/ui.dart';
 import 'package:money_expense/app/widgets/month_year_picker_sheet.dart';
 
 import '../controllers/statistik_controller.dart';
@@ -15,296 +14,262 @@ class StatistikView extends GetView<StatistikController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.background,
-      appBar: AppBar(
-        title: const Text(
-          'Statistik',
-          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.black),
-            tooltip: 'Filter Bulan',
-            onPressed: () async {
-              final picked = await showMonthYearPickerSheet(context, controller.selectedMonth.value);
-              if (picked != null) controller.setMonth(picked);
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(automaticallyImplyLeading: false, title: const Text('Statistik')),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        final month = controller.selectedMonth.value;
         return RefreshIndicator(
           onRefresh: controller.loadData,
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 24),
-            children: [
-              _SummaryCard(controller: controller),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  'Pengeluaran per Kategori',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Center(
+                  child: MonthSwitcher(
+                    month: month,
+                    onPrev: controller.goToPreviousMonth,
+                    onNext: controller.goToNextMonth,
+                    onTap: () async {
+                      final picked = await showMonthYearPickerSheet(context, month);
+                      if (picked != null) controller.setMonth(picked);
+                    },
+                  ),
                 ),
               ),
-              if (controller.categoriesWithSpending.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(child: Text('Belum ada pengeluaran bulan ini')),
-                )
-              else
-                ...controller.categoriesWithSpending.map(
-                  (category) => _CategoryStatTile(category: category, controller: controller),
-                ),
+              ..._content(context),
+              const SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
           ),
         );
       }),
     );
   }
-}
 
-class _SummaryCard extends StatefulWidget {
-  final StatistikController controller;
-  const _SummaryCard({required this.controller});
-
-  @override
-  State<_SummaryCard> createState() => _SummaryCardState();
-}
-
-class _SummaryCardState extends State<_SummaryCard> {
-  int? _touchedIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final income = widget.controller.totalIncome.value;
-      final expense = widget.controller.totalExpense.value;
-      final balance = widget.controller.balance;
-      final categories = widget.controller.categoriesWithSpending;
-      final hasSpending = categories.isNotEmpty;
-
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColor.primary,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColor.primary.withValues(alpha: 0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+  List<Widget> _content(BuildContext context) {
+    if (controller.isLoading.value) {
+      return const [
+        SliverToBoxAdapter(child: SkeletonList(itemCount: 3, shape: SkeletonShape.card, padding: EdgeInsets.all(AppSpacing.page))),
+      ];
+    }
+    final hasAny = controller.totalIncome.value > 0 || controller.totalExpense.value > 0;
+    if (!hasAny) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: EmptyState.statistik(
+            onAction: () {
+              if (Get.isRegistered<HomeController>()) Get.find<HomeController>().openCreate();
+            },
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      ];
+    }
+
+    final slices = controller.donutSlices;
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s8, AppSpacing.page, 0),
+        sliver: SliverList.list(
           children: [
-            Text('Saldo Bulan Ini', style: TextStyle(color: Colors.white.withValues(alpha: 0.9))),
-            const SizedBox(height: 8),
-            Text(
-              balance.toRupiahString(),
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
-            if (hasSpending) ...[
-              SizedBox(
-                height: 160,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    PieChart(
-                      PieChartData(
-                        sectionsSpace: 3,
-                        centerSpaceRadius: 44,
-                        pieTouchData: PieTouchData(
-                          touchCallback: (event, response) {
-                            if (!event.isInterestedForInteractions ||
-                                response == null ||
-                                response.touchedSection == null) {
-                              setState(() => _touchedIndex = null);
-                              return;
-                            }
-                            setState(() => _touchedIndex = response.touchedSection!.touchedSectionIndex);
-                          },
-                        ),
-                        sections: List.generate(categories.length, (index) {
-                          final category = categories[index];
-                          final spent = widget.controller.spendingByCategory[category.id] ?? 0.0;
-                          final percent = expense <= 0 ? 0.0 : spent / expense;
-                          final isTouched = index == _touchedIndex;
-                          final radius = isTouched ? 46.0 : 38.0;
-
-                          return PieChartSectionData(
-                            value: spent,
-                            color: category.color,
-                            radius: radius,
-                            title: percent >= 0.08 ? '${(percent * 100).toStringAsFixed(0)}%' : '',
-                            titleStyle: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          );
-                        }),
-                      ),
-                      duration: const Duration(milliseconds: 300),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _touchedIndex != null && _touchedIndex! < categories.length
-                              ? categories[_touchedIndex!].label
-                              : 'Pengeluaran',
-                          style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.9)),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          (_touchedIndex != null && _touchedIndex! < categories.length
-                                  ? widget.controller.spendingByCategory[categories[_touchedIndex!].id] ?? 0.0
-                                  : expense)
-                              .toRupiahString(),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-            Row(
-              children: [
-                Expanded(
-                  child: _SummaryItem(
-                    icon: Icons.arrow_downward,
-                    iconColor: Colors.greenAccent,
-                    label: 'Pemasukan',
-                    value: income,
+            _Totals(controller: controller),
+            const SizedBox(height: AppSpacing.section),
+            Semantics(header: true, child: Text('Pengeluaran per kategori', style: context.text.titleMedium)),
+            const SizedBox(height: AppSpacing.s12),
+            if (slices.isEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.card),
+                  child: Text(
+                    'Belum ada pengeluaran bulan ini.',
+                    style: context.text.bodyLarge?.copyWith(color: context.colors.inkMuted),
                   ),
                 ),
-                Expanded(
-                  child: _SummaryItem(
-                    icon: Icons.arrow_upward,
-                    iconColor: Colors.redAccent,
-                    label: 'Pengeluaran',
-                    value: expense,
-                  ),
-                ),
+              )
+            else ...[
+              _Donut(slices: slices, total: controller.totalExpense.value, key: ValueKey(controller.selectedMonth.value)),
+              const SizedBox(height: AppSpacing.section),
+              for (var i = 0; i < slices.length; i++) ...[
+                _RankRow(rank: i + 1, slice: slices[i], share: controller.shareOf(slices[i].amount)),
+                const SizedBox(height: AppSpacing.s8),
               ],
-            ),
+            ],
           ],
         ),
-      );
-    });
+      ),
+    ];
   }
 }
 
-class _SummaryItem extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final double value;
+Color _sliceColor(BuildContext context, DonutSlice s) => s.category?.color ?? context.colors.outline;
 
-  const _SummaryItem({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.value,
-  });
+class _Totals extends StatelessWidget {
+  const _Totals({required this.controller});
+
+  final StatistikController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(radius: 14, backgroundColor: Colors.white24, child: Icon(icon, color: iconColor, size: 16)),
-        const SizedBox(width: 8),
-        Expanded(
+    final c = context.colors;
+    Widget item(String label, num amount, AmountKind kind, {Color? color}) => Expanded(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.s12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 11)),
-              Text(
-                value.toRupiahString(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+              Text(label, style: context.text.labelMedium?.copyWith(color: c.inkMuted)),
+              const SizedBox(height: AppSpacing.s4),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: AmountText(amount, kind: kind, color: color, semanticsPrefix: label),
               ),
             ],
           ),
         ),
+      ),
+    );
+
+    final balance = controller.balance;
+    return Row(
+      children: [
+        item('Masuk', controller.totalIncome.value, AmountKind.income),
+        const SizedBox(width: AppSpacing.s8),
+        item('Keluar', controller.totalExpense.value, AmountKind.expense),
+        const SizedBox(width: AppSpacing.s8),
+        item('Selisih', balance, AmountKind.neutral, color: balance < 0 ? c.danger : null),
       ],
     );
   }
 }
 
-class _CategoryStatTile extends StatelessWidget {
-  final Category category;
-  final StatistikController controller;
-  const _CategoryStatTile({required this.category, required this.controller});
+/// Donut maksimal 6 irisan + "Lainnya", total di tengah. Irisan tumbuh dari
+/// tengah saat pertama tampil (diganti langsung jika animasi dimatikan).
+class _Donut extends StatefulWidget {
+  const _Donut({super.key, required this.slices, required this.total});
+
+  final List<DonutSlice> slices;
+  final double total;
+
+  @override
+  State<_Donut> createState() => _DonutState();
+}
+
+class _DonutState extends State<_Donut> {
+  int? _touched;
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final spent = controller.spendingByCategory[category.id] ?? 0.0;
-      final total = controller.totalExpense.value;
-      final percent = total <= 0 ? 0.0 : (spent / total).clamp(0.0, 1.0);
+    final c = context.colors;
+    final touched = _touched != null && _touched! < widget.slices.length ? widget.slices[_touched!] : null;
+    final centerLabel = touched?.label ?? 'Total keluar';
+    final centerAmount = touched?.amount ?? widget.total;
 
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
+    Widget chart(double grow) => PieChart(
+      PieChartData(
+        sectionsSpace: 2,
+        centerSpaceRadius: 64,
+        startDegreeOffset: -90,
+        pieTouchData: PieTouchData(
+          touchCallback: (event, response) {
+            final index = event.isInterestedForInteractions ? response?.touchedSection?.touchedSectionIndex : null;
+            if (index != _touched) setState(() => _touched = index != null && index >= 0 ? index : null);
+          },
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        sections: [
+          for (var i = 0; i < widget.slices.length; i++)
+            PieChartSectionData(
+              value: widget.slices[i].amount,
+              color: _sliceColor(context, widget.slices[i]),
+              radius: (i == _touched ? 36.0 : 28.0) * grow,
+              showTitle: false,
+            ),
+        ],
+      ),
+      duration: AppMotion.medium,
+    );
+
+    return Semantics(
+      label: 'Donut pengeluaran: ${[for (final s in widget.slices) '${s.label} ${AppFormat.rupiah(s.amount)}'].join(', ')}',
+      excludeSemantics: true,
+      child: SizedBox(
+        height: 220,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: category.color,
-                  child: SvgPicture.asset(
-                    category.icon,
-                    colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                    width: 20,
-                    height: 20,
+            AppMotion.reduced(context)
+                ? chart(1)
+                : TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: AppMotion.long,
+                    curve: AppMotion.emphasized,
+                    builder: (_, v, _) => chart(v),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(category.label, style: const TextStyle(fontWeight: FontWeight.w600)),
-                ),
-                Text(
-                  spent.toRupiahString(),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: percent,
-                minHeight: 6,
-                backgroundColor: Colors.grey[300],
-                color: category.color,
+            SizedBox(
+              width: 116,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(centerLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: context.text.labelMedium?.copyWith(color: c.inkMuted)),
+                  FittedBox(fit: BoxFit.scaleDown, child: AmountText(centerAmount, fontWeight: FontWeight.w700)),
+                ],
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${(percent * 100).toStringAsFixed(1)}% dari total pengeluaran',
-              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
           ],
         ),
-      );
-    });
+      ),
+    );
+  }
+}
+
+class _RankRow extends StatelessWidget {
+  const _RankRow({required this.rank, required this.slice, required this.share});
+
+  final int rank;
+  final DonutSlice slice;
+  final double share;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final color = _sliceColor(context, slice);
+    final category = slice.category;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  child: Text('$rank', style: context.text.labelLarge?.copyWith(color: c.inkMuted, fontFeatures: AppTypography.tabular)),
+                ),
+                if (category != null)
+                  CategoryBlob(iconAsset: category.icon, color: category.color, size: CategoryBlobSize.small)
+                else
+                  SizedBox.square(
+                    dimension: 32,
+                    child: DecoratedBox(decoration: BoxDecoration(color: c.surfaceContainerHighest, shape: BoxShape.circle)),
+                  ),
+                const SizedBox(width: AppSpacing.s12),
+                Expanded(child: Text(slice.label, style: context.text.titleSmall)),
+                Text(
+                  '${(share * 100).round()}%',
+                  style: context.text.labelLarge?.copyWith(color: c.inkMuted, fontFeatures: AppTypography.tabular),
+                ),
+                const SizedBox(width: AppSpacing.s12),
+                AmountText(slice.amount, semanticsPrefix: slice.label),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.s8),
+            ClipRRect(
+              borderRadius: AppRadius.fullAll,
+              child: LinearProgressIndicator(value: share, minHeight: 6, color: color),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

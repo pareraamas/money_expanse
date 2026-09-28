@@ -1,261 +1,310 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:money_expense/app/modules/expanse_create/dialogs/dialog_delete_expanse.dart';
-import 'package:money_expense/app/modules/expanse_create/dialogs/dialog_expanse_type.dart';
-import 'package:money_expense/app/modules/expanse_create/widgets/type_widget.dart';
-import 'package:money_expense/app/theme/app_color.dart';
-import 'package:money_expense/app/ults/curency_formatter.dart';
+import 'package:money_expense/app/theme/app_theme.dart';
+import 'package:money_expense/app/ui/ui.dart';
+import 'package:money_expense/app/ults/clock.dart';
+import 'package:money_expense/app/widgets/app_snackbar.dart';
+
 import '../controllers/expanse_create_controller.dart';
+import '../widgets/category_sheet.dart';
 
 class ExpanseCreateView extends GetView<ExpanseCreateController> {
   const ExpanseCreateView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Obx(
-          () => Text(
-            '${controller.arg.value.isNotEmpty ? "Ubah" : "Tambah"} Pengeluaran Baru',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: AppColor.gray1, fontWeight: FontWeight.bold, fontSize: 18),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: IconButton(icon: const Icon(AppIcons.x), tooltip: 'Tutup', onPressed: Get.back),
+            title: Obx(() => Text(controller.title)),
+            actions: [
+              Obx(() {
+                if (!controller.isEditing) return const SizedBox.shrink();
+                return IconButton(
+                  icon: const Icon(AppIcons.trash),
+                  tooltip: 'Hapus transaksi',
+                  onPressed: () => _confirmDelete(context),
+                );
+              }),
+              const SizedBox(width: AppSpacing.s4),
+            ],
+          ),
+          body: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s8, AppSpacing.page, AppSpacing.s16),
+                    children: [
+                      const _TypeToggle(),
+                      const SizedBox(height: AppSpacing.section),
+                      const _AmountDisplay(),
+                      const SizedBox(height: AppSpacing.section),
+                      _CategoryChips(onOpenAll: () => showCategorySheet(context, controller)),
+                      const SizedBox(height: AppSpacing.s16),
+                      _DateField(onTap: () => _pickDate(context)),
+                      const SizedBox(height: AppSpacing.stack),
+                      TextField(
+                        controller: controller.nameController,
+                        maxLength: 50,
+                        textInputAction: TextInputAction.done,
+                        decoration: const InputDecoration(
+                          labelText: 'Catatan',
+                          hintText: 'Opsional, mis. makan siang',
+                          prefixIcon: Icon(AppIcons.note),
+                          counterText: '',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _BottomPanel(controller: controller),
+              ],
+            ),
           ),
         ),
-        centerTitle: true,
-        actions: [
-          // button delete
-          Obx(() {
-            if (controller.arg.value.isEmpty) return SizedBox();
-            return IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () async {
-                final result = await showDeleteConfirmationDialog(context);
-                if (result == true) {
-                  controller.deleteExpanse().then((value) {
-                    if (value) {
-                      Get.back(result: true);
-                      Get.snackbar(
-                        'Berhasil',
-                        'Data pengeluaran berhasil dihapus',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                      );
-                    } else {
-                      Get.snackbar(
-                        'Gagal',
-                        'Gagal menghapus data pengeluaran',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                    }
-                  });
-                }
-              },
-            );
-          }),
-          SizedBox(width: 12),
+        const _SuccessOverlay(),
+      ],
+    );
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: controller.selectedDate.value,
+      firstDate: DateTime(2000),
+      lastDate: Clock.now(),
+    );
+    if (picked != null) controller.setDate(picked);
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final ok = await ConfirmDialog.show(
+      context,
+      title: 'Hapus transaksi ini?',
+      message: 'Catatan ini akan dihapus permanen dan tidak bisa dikembalikan.',
+    );
+    if (!ok) return;
+    if (await controller.deleteExpanse()) {
+      Get.back(result: true);
+      showAppSnackBar('Transaksi dihapus');
+    } else {
+      showAppSnackBar('Gagal menghapus transaksi. Coba lagi, ya.');
+    }
+  }
+}
+
+/// Toggle Keluar/Masuk; warnanya mengikuti tipe (coral / hijau).
+class _TypeToggle extends GetView<ExpanseCreateController> {
+  const _TypeToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Obx(() {
+      final income = controller.isIncome;
+      return SegmentedButton<String>(
+        showSelectedIcon: false,
+        segments: const [
+          ButtonSegment(value: 'expense', label: Text('Keluar')),
+          ButtonSegment(value: 'income', label: Text('Masuk')),
         ],
+        selected: {controller.transactionType.value},
+        onSelectionChanged: (s) => controller.setType(s.first),
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: income ? c.incomeContainer : c.expenseContainer,
+          selectedForegroundColor: income ? c.onIncomeContainer : c.onExpenseContainer,
+        ),
+      );
+    });
+  }
+}
+
+class _AmountDisplay extends GetView<ExpanseCreateController> {
+  const _AmountDisplay();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Obx(() {
+      final error = controller.amountError.value;
+      final kind = controller.isIncome ? AmountKind.income : AmountKind.expense;
+      return Column(
+        children: [
+          Text('Nominal', style: context.text.labelLarge?.copyWith(color: c.inkMuted)),
+          const SizedBox(height: AppSpacing.s4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: AmountText(
+              controller.amount.value,
+              kind: controller.amount.value == 0 ? AmountKind.neutral : kind,
+              size: AmountSize.display,
+              color: controller.amount.value == 0 ? c.inkMuted : null,
+              semanticsPrefix: 'Nominal',
+            ),
+          ),
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.s4),
+              child: Text(error, style: context.text.bodyMedium?.copyWith(color: c.danger)),
+            ),
+        ],
+      );
+    });
+  }
+}
+
+/// 5 kategori terakhir sebagai chip + "Semua" untuk membuka sheet.
+class _CategoryChips extends GetView<ExpanseCreateController> {
+  const _CategoryChips({required this.onOpenAll});
+
+  final VoidCallback onOpenAll;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Obx(() {
+      final selectedId = controller.selectedCategory.value?.id;
+      final error = controller.categoryError.value;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Kategori', style: context.text.labelLarge?.copyWith(color: c.inkMuted)),
+          const SizedBox(height: AppSpacing.s8),
+          Wrap(
+            spacing: AppSpacing.s8,
+            runSpacing: AppSpacing.s8,
+            children: [
+              for (final cat in controller.recentCategories)
+                ChoiceChip(
+                  avatar: CategoryBlob(iconAsset: cat.icon, color: cat.color, size: CategoryBlobSize.small),
+                  label: Text(cat.label),
+                  selected: cat.id == selectedId,
+                  showCheckmark: false,
+                  onSelected: (_) => controller.selectCategory(cat),
+                ),
+              ActionChip(
+                avatar: Icon(AppIcons.magnifyingGlass, color: c.brand),
+                label: const Text('Semua'),
+                tooltip: 'Pilih kategori',
+                onPressed: onOpenAll,
+              ),
+            ],
+          ),
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.s4),
+              child: Text(error, style: context.text.bodyMedium?.copyWith(color: c.danger)),
+            ),
+        ],
+      );
+    });
+  }
+}
+
+class _DateField extends GetView<ExpanseCreateController> {
+  const _DateField({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Obx(
+      () => Semantics(
+        button: true,
+        label: 'Tanggal ${controller.dateLabel}, ketuk untuk mengubah',
+        excludeSemantics: true,
+        child: Material(
+          color: c.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.inputAll, side: BorderSide(color: c.outlineVariant)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 56),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
+                child: Row(
+                  children: [
+                    Icon(AppIcons.calendarBlank, color: c.inkMuted),
+                    const SizedBox(width: AppSpacing.s12),
+                    Expanded(child: Text(controller.dateLabel, style: context.text.bodyLarge)),
+                    Icon(AppIcons.caretRight, color: c.inkMuted),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
+    );
+  }
+}
 
-      body: Form(
-        key: controller.formKey,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              sliver: SliverToBoxAdapter(
-                child: Obx(
-                  () => Column(
-                    spacing: 18,
-                    children: [
-                // Transaction Type Toggle
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: AppColor.gray5,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.transactionType.value = 'expense',
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: controller.transactionType.value == 'expense' ? Colors.redAccent : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Pengeluaran",
-                              style: TextStyle(
-                                color: controller.transactionType.value == 'expense' ? Colors.white : AppColor.gray3,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.transactionType.value = 'income',
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: controller.transactionType.value == 'income' ? AppColor.teal : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Pemasukan",
-                              style: TextStyle(
-                                color: controller.transactionType.value == 'income' ? Colors.white : AppColor.gray3,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+class _BottomPanel extends StatelessWidget {
+  const _BottomPanel({required this.controller});
 
-                // Name
-                TextFormField(
-                  style: TextStyle(fontSize: 14, color: AppColor.gray1),
-                  controller: controller.nameController,
-                  maxLength: 50,
-                  decoration: InputDecoration(
-                    counter: const SizedBox.shrink(),
-                    labelText: "Keterangan",
-                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                  ),
-                  validator: (value) => value == null || value.isEmpty ? "masukan keterangan" : null,
-                ),
+  final ExpanseCreateController controller;
 
-                // Type (Category)
-                TypeWidget(
-                  controller: controller.typeController,
-                  label: "Kategori",
-                  iconPath: controller.selectedCategory.value?.icon ?? "",
-                  iconColor: controller.selectedCategory.value?.color ?? Colors.grey,
-                  readOnly: true,
-                  onTap: () async {
-                    final data = await dialogExpanseType(context, controller.categories);
-                    if (data != null) {
-                      controller.selectedCategory.value = data;
-                      controller.typeController.text = data.label;
-                    }
-                  },
-                  suffix: CircleAvatar(
-                    backgroundColor: AppColor.gray5,
-                    radius: 16,
-                    child: Icon(Icons.arrow_forward_ios_outlined, color: AppColor.gray3, size: 12),
-                  ),
-                ),
-
-                // Date Picker
-                TextFormField(
-                  controller: controller.dateController,
-                  readOnly: true,
-                  style: TextStyle(fontSize: 14, color: AppColor.gray1),
-                  decoration: InputDecoration(
-                    labelText: "Tanggal",
-                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    suffixIcon: const Icon(Icons.calendar_month_outlined, color: Color(0xffBDBDBD)),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                  ),
-                  onTap: () async {
-                    final now = DateTime.now();
-                    final picked = await showDatePicker(context: context, initialDate: now, firstDate: DateTime(2000), lastDate: now);
-                    if (picked != null) {
-                      //Senin, 4 Januari 2021
-                      controller.dateController.text = DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(picked);
-                      controller.selectedDate.value = picked;
-                    }
-                  },
-                  validator: (value) => value == null || value.isEmpty ? "Tanggal tidak boleh kosong" : null,
-                ),
-
-                // Nominal
-                TextFormField(
-                  maxLength: 18,
-                  style: TextStyle(fontSize: 14, color: AppColor.gray1),
-                  controller: controller.priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    counter: const SizedBox.shrink(),
-                    labelText: "Nominal",
-                    labelStyle: const TextStyle(fontSize: 14, color: Color(0xff828282)),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColor.borderTextInput),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                  ),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, CureencyFormatter()],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "tidak boleh kosong";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                // Submit button
-                ElevatedButton(
-                  onPressed: () {
-                    if (controller.formKey.currentState!.validate()) {
-                      (controller.arg.isEmpty) ? controller.submitForm() : controller.onUpdateSubmit();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primary,
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                  ),
-                  child: Text(
-                    "Simpan",
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                    ],
-                  ),
-                ),
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.colors.surfaceContainer,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.sheetTop),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s12, AppSpacing.page, AppSpacing.s12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Obx(() => AmountKeypad(value: controller.amount.value, onChanged: controller.onAmountChanged)),
+            const SizedBox(height: AppSpacing.s12),
+            Obx(
+              () => FilledButton(
+                onPressed: controller.isSaving.value ? null : controller.save,
+                child: const Text('Simpan'),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+/// Momen sukses: centang Lottie + Dompi senang, lalu form tertutup.
+class _SuccessOverlay extends GetView<ExpanseCreateController> {
+  const _SuccessOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Obx(() {
+      if (!controller.justSaved.value) return const SizedBox.shrink();
+      Widget content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppIllustration.dompi(DompiMood.senang, size: 140),
+          const SizedBox(height: AppSpacing.s8),
+          SuccessCheck(onCompleted: controller.finishSave),
+          const SizedBox(height: AppSpacing.s8),
+          Text('Tersimpan!', style: context.text.titleLarge),
+        ],
+      );
+      if (!AppMotion.reduced(context)) {
+        content = content.animate().fadeIn(duration: AppMotion.short).scaleXY(begin: 0.9, end: 1, curve: AppMotion.emphasized);
+      }
+      return Positioned.fill(
+        child: Material(
+          color: c.surface.withValues(alpha: 0.94),
+          child: Center(child: content),
+        ),
+      );
+    });
   }
 }
