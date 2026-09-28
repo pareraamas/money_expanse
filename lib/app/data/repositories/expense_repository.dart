@@ -1,8 +1,8 @@
-import 'package:money_expense/app/data/local/database_helper.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/budget_model.dart';
-import 'package:money_expense/app/data/models/transaction_filter.dart';
+import 'package:wister_lite/app/data/local/database_helper.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/budget_model.dart';
+import 'package:wister_lite/app/data/models/transaction_filter.dart';
 
 class ExpenseRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;

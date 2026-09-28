@@ -3,9 +3,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
 
 import 'support/app_driver.dart';
 import 'support/fake_repository.dart';

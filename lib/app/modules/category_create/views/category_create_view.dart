@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ui/ui.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ui/ui.dart';
 
 import '../controllers/category_create_controller.dart';
 

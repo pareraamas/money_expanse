@@ -1,4 +1,4 @@
-# Money Expanse — Rencana Redesign Total
+# Wister Lite — Rencana Redesign Total
 
 28 September 2026 · Amas Parera
 
@@ -6,7 +6,7 @@
 
 ## Ringkasan
 
-Money Expense akan didesain ulang total dengan arah visual yang hangat dan penuh ilustrasi kecil. Fitur tetap sama persis: transaksi, kategori, anggaran bulanan, dan statistik. Yang berubah hanya tampilan, alur interaksi, dan fondasi design system.
+Wister Lite akan didesain ulang total dengan arah visual yang hangat dan penuh ilustrasi kecil. Fitur tetap sama persis: transaksi, kategori, anggaran bulanan, dan statistik. Yang berubah hanya tampilan, alur interaksi, dan fondasi design system.
 
 Alasannya: UI sekarang terasa seperti dibuat di tiga era berbeda. Ada sekitar 149 warna hardcoded, 6 ukuran radius, dua gaya dialog hapus, dan empty state yang hanya berupa teks abu-abu.
 
@@ -52,7 +52,7 @@ Kelola Kategori juga bisa dibuka dari sheet kategori di form transaksi, jadi lay
 
 Pola yang berulang di aplikasi keuangan terbaik 2025–2026: satu angka besar di depan, gaya ilustrasi yang punya suara sendiri, dan pencatatan yang secepat mengetik angka.
 
-| Referensi | Yang diambil untuk Money Expense |
+| Referensi | Yang diambil untuk Wister Lite |
 | --- | --- |
 | [Copilot Money](https://blakecrosley.com/guides/design/copilot-money) | Angka display besar dengan tabular figures; chart sebagai UI utama; warna semantik tetap untuk pemasukan/pengeluaran |
 | [Monzo](https://www.creativereview.co.uk/monzo-branding-ragged-edge/) | Satu warna signature + ~90 ilustrasi gambar tangan yang tidak generik |

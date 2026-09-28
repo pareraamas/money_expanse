@@ -3,8 +3,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/data/models/transaction_filter.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:wister_lite/app/data/models/transaction_filter.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
 
 import 'support/fixtures.dart';
 import 'support/harness.dart';

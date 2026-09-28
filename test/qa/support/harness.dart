@@ -7,10 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ults/clock.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ults/clock.dart';
 
 import 'fake_repository.dart';
 import 'fixtures.dart';

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "pareraamas.com" "\0"
-            VALUE "FileDescription", "money_expense" "\0"
+            VALUE "FileDescription", "wister_lite" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "money_expense" "\0"
+            VALUE "InternalName", "wister_lite" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 pareraamas.com. All rights reserved." "\0"
-            VALUE "OriginalFilename", "money_expense.exe" "\0"
-            VALUE "ProductName", "money_expense" "\0"
+            VALUE "OriginalFilename", "wister_lite.exe" "\0"
+            VALUE "ProductName", "wister_lite" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

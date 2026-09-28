@@ -7,11 +7,11 @@ import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/services/share_service.dart';
-import 'package:money_expense/app/modules/share_card/controllers/share_card_controller.dart';
-import 'package:money_expense/app/modules/share_card/views/share_card_view.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/ui/ui.dart';
+import 'package:wister_lite/app/data/services/share_service.dart';
+import 'package:wister_lite/app/modules/share_card/controllers/share_card_controller.dart';
+import 'package:wister_lite/app/modules/share_card/views/share_card_view.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/ui/ui.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'support/harness.dart';

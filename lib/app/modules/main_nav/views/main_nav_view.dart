@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/modules/budget/views/budget_view.dart';
-import 'package:money_expense/app/modules/home/views/home_view.dart';
-import 'package:money_expense/app/modules/statistik/views/statistik_view.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ui/ui.dart';
+import 'package:wister_lite/app/modules/budget/views/budget_view.dart';
+import 'package:wister_lite/app/modules/home/views/home_view.dart';
+import 'package:wister_lite/app/modules/statistik/views/statistik_view.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ui/ui.dart';
 
 import '../controllers/main_nav_controller.dart';
 

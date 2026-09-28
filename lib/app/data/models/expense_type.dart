@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:money_expense/gen/assets.gen.dart';
+import 'package:wister_lite/gen/assets.gen.dart';
 
 enum ExpenseType {
   FOOD('Makanan', Color(0xfff2c94c)),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/services/transaction_import.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ui/ui.dart';
+import 'package:wister_lite/app/data/services/transaction_import.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ui/ui.dart';
 
 import '../controllers/import_preview_controller.dart';
 

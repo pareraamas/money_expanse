@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/transaction_filter.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ui/ui.dart';
-import 'package:money_expense/app/ults/clock.dart';
-import 'package:money_expense/app/ults/curency_formatter.dart';
-import 'package:money_expense/app/ults/date_formatter.dart';
-import 'package:money_expense/app/ults/string_currency_parsing.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/transaction_filter.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ui/ui.dart';
+import 'package:wister_lite/app/ults/clock.dart';
+import 'package:wister_lite/app/ults/curency_formatter.dart';
+import 'package:wister_lite/app/ults/date_formatter.dart';
+import 'package:wister_lite/app/ults/string_currency_parsing.dart';
 
 import '../controllers/transaction_history_controller.dart';
 

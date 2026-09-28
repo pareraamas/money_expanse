@@ -1,4 +1,4 @@
-# Money Expense App
+# Wister Lite App
 
 Aplikasi pencatatan keuangan pribadi yang sederhana dan mudah digunakan, dibangun dengan Flutter. Aplikasi ini membantu Anda melacak pengeluaran harian dan bulanan dengan mudah.
 
@@ -51,7 +51,7 @@ Anda dapat mengunduh file APK yang sudah di-build untuk berbagai arsitektur:
 1. Clone repositori ini:
    ```bash
    git clone [URL_REPOSITORY]
-   cd money_expense
+   cd wister_lite
    ```
 
 2. Install dependencies:

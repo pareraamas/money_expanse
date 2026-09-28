@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cek aset ilustrasi Money Expense.
+"""Cek aset ilustrasi Wister Lite.
 
 Aturan:
 - Setiap SVG < 8 KB dan XML valid.

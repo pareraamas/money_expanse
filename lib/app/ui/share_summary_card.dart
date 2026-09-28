@@ -197,7 +197,7 @@ class ShareSummaryCard extends StatelessWidget {
               children: [
                 const ShareAppMark(size: 32, showName: false),
                 const SizedBox(width: AppSpacing.s8),
-                Text('Dicatat dengan Money Expense', style: onBrand),
+                Text('Dicatat dengan Wister Lite', style: onBrand),
               ],
             ),
           ],
@@ -256,8 +256,8 @@ class ShareFeedSlide extends StatelessWidget {
                 Expanded(
                   child: switch (index) {
                     0 => const SizedBox.shrink(),
-                    _ when index == count - 1 => Text('Dicatat dengan Money Expense', style: small),
-                    _ => Text('Money Expense', style: small),
+                    _ when index == count - 1 => Text('Dicatat dengan Wister Lite', style: small),
+                    _ => Text('Wister Lite', style: small),
                   },
                 ),
                 Text(index == 0 ? 'Geser →   ${index + 1}/$count' : '${index + 1}/$count', style: small),
@@ -507,7 +507,7 @@ class ShareAppMark extends StatelessWidget {
       children: [
         icon,
         const SizedBox(width: AppSpacing.s8),
-        Text('Money Expense', style: context.text.titleSmall?.copyWith(color: c.onBrand)),
+        Text('Wister Lite', style: context.text.titleSmall?.copyWith(color: c.onBrand)),
       ],
     );
   }

@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:money_expense/app/ults/clock.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/widgets/app_snackbar.dart';
+import 'package:wister_lite/app/ults/clock.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/widgets/app_snackbar.dart';
 
 class HomeController extends GetxController {
   final ExpenseRepository _expenseRepository = Get.find<ExpenseRepository>();

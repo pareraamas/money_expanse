@@ -1,4 +1,4 @@
-package pareraamas.com.money_expense
+package pareraamas.com.wister_lite
 
 import io.flutter.embedding.android.FlutterActivity
 

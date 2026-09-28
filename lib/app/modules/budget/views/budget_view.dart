@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
-import 'package:money_expense/app/ui/ui.dart';
-import 'package:money_expense/app/widgets/month_year_picker_sheet.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
+import 'package:wister_lite/app/ui/ui.dart';
+import 'package:wister_lite/app/widgets/month_year_picker_sheet.dart';
 
 import '../controllers/budget_controller.dart';
 

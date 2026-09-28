@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/data/services/share_service.dart';
-import 'package:money_expense/app/data/services/transaction_export.dart';
-import 'package:money_expense/app/data/services/transaction_import.dart';
-import 'package:money_expense/app/widgets/app_snackbar.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/data/services/share_service.dart';
+import 'package:wister_lite/app/data/services/transaction_export.dart';
+import 'package:wister_lite/app/data/services/transaction_import.dart';
+import 'package:wister_lite/app/widgets/app_snackbar.dart';
 
 /// Argumen route pratinjau import.
 class ImportPreviewArgs {

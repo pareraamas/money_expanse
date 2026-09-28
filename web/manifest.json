@@ -1,6 +1,6 @@
 {
-    "name": "money_expense",
-    "short_name": "money_expense",
+    "name": "wister_lite",
+    "short_name": "wister_lite",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,10 +1,10 @@
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/modules/budget/controllers/budget_controller.dart';
-import 'package:money_expense/app/modules/home/controllers/home_controller.dart';
-import 'package:money_expense/app/modules/statistik/controllers/statistik_controller.dart';
-import 'package:money_expense/app/modules/transaction_history/controllers/transaction_history_controller.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:wister_lite/app/modules/budget/controllers/budget_controller.dart';
+import 'package:wister_lite/app/modules/home/controllers/home_controller.dart';
+import 'package:wister_lite/app/modules/statistik/controllers/statistik_controller.dart';
+import 'package:wister_lite/app/modules/transaction_history/controllers/transaction_history_controller.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
 
 class MainNavController extends GetxController {
   final selectedIndex = 0.obs;

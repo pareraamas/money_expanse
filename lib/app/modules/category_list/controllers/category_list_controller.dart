@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
 
 class CategoryListController extends GetxController {
   final ExpenseRepository _repository = Get.find<ExpenseRepository>();

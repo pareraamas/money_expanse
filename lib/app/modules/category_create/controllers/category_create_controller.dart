@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
-import 'package:money_expense/app/ui/ui.dart';
-import 'package:money_expense/app/widgets/app_snackbar.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense_type.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:wister_lite/app/ui/ui.dart';
+import 'package:wister_lite/app/widgets/app_snackbar.dart';
 
 class CategoryCreateController extends GetxController {
   final labelController = TextEditingController();

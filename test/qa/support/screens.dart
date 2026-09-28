@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/data/services/transaction_import.dart';
-import 'package:money_expense/app/modules/import_preview/controllers/import_preview_controller.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/ui/gallery/component_gallery_page.dart';
+import 'package:wister_lite/app/data/services/transaction_import.dart';
+import 'package:wister_lite/app/modules/import_preview/controllers/import_preview_controller.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/ui/gallery/component_gallery_page.dart';
 
 import 'fixtures.dart';
 import 'harness.dart';

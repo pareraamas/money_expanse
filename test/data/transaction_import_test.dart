@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/services/transaction_csv.dart';
-import 'package:money_expense/app/data/services/transaction_import.dart';
-import 'package:money_expense/app/data/services/transaction_pdf.dart';
-import 'package:money_expense/app/data/services/transaction_report.dart';
-import 'package:money_expense/app/data/services/transaction_xlsx.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/services/transaction_csv.dart';
+import 'package:wister_lite/app/data/services/transaction_import.dart';
+import 'package:wister_lite/app/data/services/transaction_pdf.dart';
+import 'package:wister_lite/app/data/services/transaction_report.dart';
+import 'package:wister_lite/app/data/services/transaction_xlsx.dart';
 
 void main() {
   final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/uil_pizza-slice.svg');

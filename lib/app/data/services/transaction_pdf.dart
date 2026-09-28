@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:money_expense/app/data/services/transaction_csv.dart';
-import 'package:money_expense/app/data/services/transaction_report.dart';
-import 'package:money_expense/app/theme/tokens/app_colors.dart';
-import 'package:money_expense/app/ui/app_format.dart';
+import 'package:wister_lite/app/data/services/transaction_csv.dart';
+import 'package:wister_lite/app/data/services/transaction_report.dart';
+import 'package:wister_lite/app/theme/tokens/app_colors.dart';
+import 'package:wister_lite/app/ui/app_format.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -34,7 +34,7 @@ abstract final class TransactionPdf {
 
     final doc = pw.Document(
       title: 'Laporan Keuangan ${period.label}',
-      author: 'Money Expense',
+      author: 'Wister Lite',
       theme: pw.ThemeData.withFont(base: regular, bold: bold),
     );
 
@@ -76,7 +76,7 @@ abstract final class TransactionPdf {
         footer: (ctx) => pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
-            pw.Text('Dibuat dengan Money Expense · ${TransactionCsv.formatDate(at)}', style: st(8, color: muted)),
+            pw.Text('Dibuat dengan Wister Lite · ${TransactionCsv.formatDate(at)}', style: st(8, color: muted)),
             pw.Text('Halaman ${ctx.pageNumber}/${ctx.pagesCount}', style: st(8, color: muted)),
           ],
         ),

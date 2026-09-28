@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lottie/lottie.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
-import 'package:money_expense/app/ui/ui.dart';
+import 'package:wister_lite/app/data/models/expense_type.dart';
+import 'package:wister_lite/app/ui/ui.dart';
 
 import 'support/harness.dart';
 

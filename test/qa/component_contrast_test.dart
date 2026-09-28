@@ -4,7 +4,7 @@ library;
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
 
 double _ratio(Color fg, Color bg) {
   final f = Color.alphaBlend(fg, bg);

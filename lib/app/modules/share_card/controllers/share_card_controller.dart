@@ -4,11 +4,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/data/services/share_service.dart';
-import 'package:money_expense/app/ui/ui.dart';
-import 'package:money_expense/app/ults/clock.dart';
-import 'package:money_expense/app/widgets/app_snackbar.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/data/services/share_service.dart';
+import 'package:wister_lite/app/ui/ui.dart';
+import 'package:wister_lite/app/ults/clock.dart';
+import 'package:wister_lite/app/widgets/app_snackbar.dart';
 
 /// Pratinjau & ekspor kartu ringkasan bulanan sebagai PNG.
 ///

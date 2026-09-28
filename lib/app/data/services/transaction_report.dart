@@ -1,5 +1,5 @@
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/ui/app_format.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/ui/app_format.dart';
 
 /// Rentang data yang diekspor: satu bulan, atau semua transaksi.
 class ReportPeriod {

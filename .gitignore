@@ -51,3 +51,5 @@ migrate_working_dir/
 
 # FVM Version Cache
 .fvm/
+# Keystore generator config (contains signing password)
+file-gka.yaml

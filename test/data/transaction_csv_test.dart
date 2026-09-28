@@ -1,8 +1,8 @@
 import 'package:csv/csv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/services/transaction_csv.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/services/transaction_csv.dart';
 
 void main() {
   final food = Category(id: 'food', label: 'Makanan', colorValue: 0xfff2c94c, icon: 'assets/uil_pizza-slice.svg');

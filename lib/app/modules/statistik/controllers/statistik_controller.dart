@@ -2,20 +2,20 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:get/get.dart';
-import 'package:money_expense/app/ults/clock.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/data/services/share_service.dart';
-import 'package:money_expense/app/data/services/transaction_csv.dart';
-import 'package:money_expense/app/data/services/transaction_export.dart';
-import 'package:money_expense/app/data/services/transaction_import.dart';
-import 'package:money_expense/app/data/services/transaction_report.dart';
-import 'package:money_expense/app/data/services/transaction_xlsx.dart';
-import 'package:money_expense/app/modules/import_preview/controllers/import_preview_controller.dart';
-import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:wister_lite/app/ults/clock.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/data/services/share_service.dart';
+import 'package:wister_lite/app/data/services/transaction_csv.dart';
+import 'package:wister_lite/app/data/services/transaction_export.dart';
+import 'package:wister_lite/app/data/services/transaction_import.dart';
+import 'package:wister_lite/app/data/services/transaction_report.dart';
+import 'package:wister_lite/app/data/services/transaction_xlsx.dart';
+import 'package:wister_lite/app/modules/import_preview/controllers/import_preview_controller.dart';
+import 'package:wister_lite/app/modules/main_nav/controllers/main_nav_controller.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:money_expense/app/routes/app_pages.dart';
-import 'package:money_expense/app/widgets/app_snackbar.dart';
+import 'package:wister_lite/app/routes/app_pages.dart';
+import 'package:wister_lite/app/widgets/app_snackbar.dart';
 
 class StatistikController extends GetxController {
   final ExpenseRepository _repository = Get.find<ExpenseRepository>();

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
-import 'package:money_expense/app/data/services/share_service.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/data/services/share_service.dart';
 
 class InitialBinding extends Bindings {
   @override

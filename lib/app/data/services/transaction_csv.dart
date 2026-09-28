@@ -1,5 +1,5 @@
 import 'package:csv/csv.dart';
-import 'package:money_expense/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
 
 /// Format CSV transaksi. Header & isi kolom adalah kontrak: file hasil export
 /// harus bisa di-import kembali, jadi jangan diubah tanpa menjaga kompatibilitas.

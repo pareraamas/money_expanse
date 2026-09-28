@@ -1,7 +1,7 @@
-import 'package:money_expense/app/data/models/budget_model.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
+import 'package:wister_lite/app/data/models/budget_model.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/expense_type.dart';
 
 import 'fake_repository.dart';
 

@@ -1,11 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
-import 'package:money_expense/app/data/models/budget_model.dart';
-import 'package:money_expense/app/data/models/transaction_filter.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense_type.dart';
+import 'package:wister_lite/app/data/models/budget_model.dart';
+import 'package:wister_lite/app/data/models/transaction_filter.dart';
 
 import 'dart:io';
 

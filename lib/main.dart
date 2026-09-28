@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/theme/app_theme.dart';
+import 'package:wister_lite/app/theme/app_theme.dart';
 import 'app/routes/app_pages.dart';
 import 'app/bindings/initial_binding.dart';
 
@@ -11,7 +11,7 @@ void main() {
 
   runApp(
     GetMaterialApp(
-      title: "Money Expense",
+      title: "Wister Lite",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

@@ -1,8 +1,8 @@
-import 'package:money_expense/app/data/models/budget_model.dart';
-import 'package:money_expense/app/data/models/category_model.dart';
-import 'package:money_expense/app/data/models/expense.dart';
-import 'package:money_expense/app/data/models/transaction_filter.dart';
-import 'package:money_expense/app/data/repositories/expense_repository.dart';
+import 'package:wister_lite/app/data/models/budget_model.dart';
+import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/models/expense.dart';
+import 'package:wister_lite/app/data/models/transaction_filter.dart';
+import 'package:wister_lite/app/data/repositories/expense_repository.dart';
 
 /// Bulan & hari acuan untuk semua test QA. Golden harus sama besok maupun
 /// tahun depan, jadi "bulan ini" dan "hari ini" dipatok ke sini.
