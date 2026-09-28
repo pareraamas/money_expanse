@@ -25,12 +25,12 @@ abstract final class AppPalette {
 
   // Krem (netral terang)
   static const cream0 = Color(0xFFFFFFFF);
-  static const cream50 = Color(0xFFFFF8EE);
-  static const cream100 = Color(0xFFFCF3E6);
-  static const cream200 = Color(0xFFF8EEDF);
-  static const cream300 = Color(0xFFF3E8D7);
-  static const cream400 = Color(0xFFEEE2CF);
-  static const cream500 = Color(0xFFE3D9C8);
+  static const cream50 = Color(0xFFFFFCF8);
+  static const cream100 = Color(0xFFFCF9F4);
+  static const cream200 = Color(0xFFF8F4EE);
+  static const cream300 = Color(0xFFF3EEE7);
+  static const cream400 = Color(0xFFEDE7DF);
+  static const cream500 = Color(0xFFE4DED5);
   static const cream600 = Color(0xFF857D70);
   static const cream700 = Color(0xFFF1EDE6);
 

@@ -9,20 +9,26 @@ import 'package:money_expense/app/widgets/app_snackbar.dart';
 import '../controllers/expanse_create_controller.dart';
 import '../widgets/category_sheet.dart';
 
+/// Form satu layar tanpa scroll: nominal selalu terlihat di tengah,
+/// kategori satu baris geser, tanggal + Simpan menempel di keypad.
 class ExpanseCreateView extends GetView<ExpanseCreateController> {
   const ExpanseCreateView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Keyboard sistem terbuka (mengetik catatan) → keypad nominal disembunyikan
+    // agar tidak ada dua keyboard bertumpuk.
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
             leading: IconButton(icon: const Icon(AppIcons.x), tooltip: 'Tutup', onPressed: Get.back),
-            title: Obx(() => Text(controller.title)),
+            centerTitle: true,
+            title: Obx(() => Semantics(label: controller.title, child: const _TypeToggle())),
             actions: [
               Obx(() {
-                if (!controller.isEditing) return const SizedBox.shrink();
+                if (!controller.isEditing) return const SizedBox(width: AppSpacing.minTouch);
                 return IconButton(
                   icon: const Icon(AppIcons.trash),
                   tooltip: 'Hapus transaksi',
@@ -37,32 +43,27 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
             child: Column(
               children: [
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s8, AppSpacing.page, AppSpacing.s16),
-                    children: [
-                      const _TypeToggle(),
-                      const SizedBox(height: AppSpacing.section),
-                      const _AmountDisplay(),
-                      const SizedBox(height: AppSpacing.section),
-                      _CategoryChips(onOpenAll: () => showCategorySheet(context, controller)),
-                      const SizedBox(height: AppSpacing.s16),
-                      _DateField(onTap: () => _pickDate(context)),
-                      const SizedBox(height: AppSpacing.stack),
-                      TextField(
-                        controller: controller.nameController,
-                        maxLength: 50,
-                        textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                          labelText: 'Catatan',
-                          hintText: 'Opsional, mis. makan siang',
-                          prefixIcon: Icon(AppIcons.note),
-                          counterText: '',
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: controller.noteFocus.unfocus,
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page, vertical: AppSpacing.s8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const _AmountDisplay(),
+                            const SizedBox(height: AppSpacing.s16),
+                            _NoteField(controller: controller),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-                _BottomPanel(controller: controller),
+                _CategoryStrip(onOpenAll: () => showCategorySheet(context, controller)),
+                const SizedBox(height: AppSpacing.s12),
+                if (!keyboardOpen) _BottomPanel(controller: controller, onPickDate: () => _pickDate(context)),
               ],
             ),
           ),
@@ -98,7 +99,7 @@ class ExpanseCreateView extends GetView<ExpanseCreateController> {
   }
 }
 
-/// Toggle Keluar/Masuk; warnanya mengikuti tipe (coral / hijau).
+/// Toggle Keluar/Masuk di AppBar; warnanya mengikuti tipe (coral / hijau).
 class _TypeToggle extends GetView<ExpanseCreateController> {
   const _TypeToggle();
 
@@ -133,17 +134,17 @@ class _AmountDisplay extends GetView<ExpanseCreateController> {
     return Obx(() {
       final error = controller.amountError.value;
       final kind = controller.isIncome ? AmountKind.income : AmountKind.expense;
+      final empty = controller.amount.value == 0;
       return Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Nominal', style: context.text.labelLarge?.copyWith(color: c.inkMuted)),
-          const SizedBox(height: AppSpacing.s4),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: AmountText(
               controller.amount.value,
-              kind: controller.amount.value == 0 ? AmountKind.neutral : kind,
+              kind: empty ? AmountKind.neutral : kind,
               size: AmountSize.display,
-              color: controller.amount.value == 0 ? c.inkMuted : null,
+              color: empty ? c.inkMuted : null,
               semanticsPrefix: 'Nominal',
             ),
           ),
@@ -158,9 +159,47 @@ class _AmountDisplay extends GetView<ExpanseCreateController> {
   }
 }
 
-/// 5 kategori terakhir sebagai chip + "Semua" untuk membuka sheet.
-class _CategoryChips extends GetView<ExpanseCreateController> {
-  const _CategoryChips({required this.onOpenAll});
+/// Catatan opsional sebagai pill ringkas di bawah nominal.
+class _NoteField extends StatelessWidget {
+  const _NoteField({required this.controller});
+
+  final ExpanseCreateController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    const none = OutlineInputBorder(borderRadius: AppRadius.fullAll, borderSide: BorderSide.none);
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 320),
+      child: TextField(
+        controller: controller.nameController,
+        focusNode: controller.noteFocus,
+        maxLength: 50,
+        textAlign: TextAlign.center,
+        textCapitalization: TextCapitalization.sentences,
+        textInputAction: TextInputAction.done,
+        style: context.text.bodyLarge,
+        decoration: InputDecoration(
+          hintText: 'Tambah catatan',
+          fillColor: c.surfaceContainerLow,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
+          prefixIcon: Icon(AppIcons.note, color: c.inkMuted, size: 20),
+          // Penyeimbang ikon kiri agar teks tetap di tengah.
+          suffixIcon: const SizedBox(width: 20),
+          border: none,
+          enabledBorder: none,
+          focusedBorder: OutlineInputBorder(borderRadius: AppRadius.fullAll, borderSide: BorderSide(color: c.brand)),
+          counterText: '',
+        ),
+      ),
+    );
+  }
+}
+
+/// Satu baris kategori yang bisa digeser; "Semua" selalu di depan.
+class _CategoryStrip extends GetView<ExpanseCreateController> {
+  const _CategoryStrip({required this.onOpenAll});
 
   final VoidCallback onOpenAll;
 
@@ -170,34 +209,45 @@ class _CategoryChips extends GetView<ExpanseCreateController> {
     return Obx(() {
       final selectedId = controller.selectedCategory.value?.id;
       final error = controller.categoryError.value;
+      final cats = controller.recentCategories.toList();
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Kategori', style: context.text.labelLarge?.copyWith(color: c.inkMuted)),
-          const SizedBox(height: AppSpacing.s8),
-          Wrap(
-            spacing: AppSpacing.s8,
-            runSpacing: AppSpacing.s8,
-            children: [
-              for (final cat in controller.recentCategories)
-                ChoiceChip(
-                  avatar: CategoryBlob(iconAsset: cat.icon, color: cat.color, size: CategoryBlobSize.small),
-                  label: Text(cat.label),
-                  selected: cat.id == selectedId,
-                  showCheckmark: false,
-                  onSelected: (_) => controller.selectCategory(cat),
-                ),
-              ActionChip(
-                avatar: Icon(AppIcons.magnifyingGlass, color: c.brand),
-                label: const Text('Semua'),
-                tooltip: 'Pilih kategori',
-                onPressed: onOpenAll,
-              ),
-            ],
+          SizedBox(
+            height: AppSpacing.minTouch,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
+              itemCount: cats.length + 1,
+              separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.s8),
+              itemBuilder: (context, i) {
+                if (i == 0) {
+                  return Center(
+                    child: ActionChip(
+                      avatar: Icon(AppIcons.magnifyingGlass, color: c.brand),
+                      label: const Text('Semua'),
+                      tooltip: 'Pilih kategori',
+                      onPressed: onOpenAll,
+                    ),
+                  );
+                }
+                final cat = cats[i - 1];
+                return Center(
+                  child: ChoiceChip(
+                    avatar: CategoryBlob(iconAsset: cat.icon, color: cat.color, size: CategoryBlobSize.small),
+                    label: Text(cat.label),
+                    selected: cat.id == selectedId,
+                    showCheckmark: false,
+                    onSelected: (_) => controller.selectCategory(cat),
+                  ),
+                );
+              },
+            ),
           ),
           if (error != null)
             Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.s4),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s4, AppSpacing.page, 0),
               child: Text(error, style: context.text.bodyMedium?.copyWith(color: c.danger)),
             ),
         ],
@@ -206,50 +256,12 @@ class _CategoryChips extends GetView<ExpanseCreateController> {
   }
 }
 
-class _DateField extends GetView<ExpanseCreateController> {
-  const _DateField({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Obx(
-      () => Semantics(
-        button: true,
-        label: 'Tanggal ${controller.dateLabel}, ketuk untuk mengubah',
-        excludeSemantics: true,
-        child: Material(
-          color: c.surfaceContainerLowest,
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.inputAll, side: BorderSide(color: c.outlineVariant)),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 56),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
-                child: Row(
-                  children: [
-                    Icon(AppIcons.calendarBlank, color: c.inkMuted),
-                    const SizedBox(width: AppSpacing.s12),
-                    Expanded(child: Text(controller.dateLabel, style: context.text.bodyLarge)),
-                    Icon(AppIcons.caretRight, color: c.inkMuted),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
+/// Keypad + baris [tanggal][Simpan] agar tidak butuh field tanggal terpisah.
 class _BottomPanel extends StatelessWidget {
-  const _BottomPanel({required this.controller});
+  const _BottomPanel({required this.controller, required this.onPickDate});
 
   final ExpanseCreateController controller;
+  final VoidCallback onPickDate;
 
   @override
   Widget build(BuildContext context) {
@@ -264,11 +276,30 @@ class _BottomPanel extends StatelessWidget {
           children: [
             Obx(() => AmountKeypad(value: controller.amount.value, onChanged: controller.onAmountChanged)),
             const SizedBox(height: AppSpacing.s12),
-            Obx(
-              () => FilledButton(
-                onPressed: controller.isSaving.value ? null : controller.save,
-                child: const Text('Simpan'),
-              ),
+            Row(
+              children: [
+                Obx(
+                  () => Semantics(
+                    button: true,
+                    label: 'Tanggal ${controller.dateLabel}, ketuk untuk mengubah',
+                    excludeSemantics: true,
+                    child: OutlinedButton.icon(
+                      onPressed: onPickDate,
+                      icon: const Icon(AppIcons.calendarBlank),
+                      label: Text(controller.dateShortLabel),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s8),
+                Expanded(
+                  child: Obx(
+                    () => FilledButton(
+                      onPressed: controller.isSaving.value ? null : controller.save,
+                      child: const Text('Simpan'),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

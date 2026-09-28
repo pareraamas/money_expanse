@@ -43,12 +43,26 @@ final qaScreens = <QaScreen>[
   const QaScreen('kategori-buat', route: Routes.CATEGORY_CREATE),
   QaScreen('kategori-ubah', route: Routes.CATEGORY_CREATE, arguments: seedCategories().first),
   QaScreen('dialog-hapus-kategori', route: Routes.CATEGORY_CREATE, arguments: seedCategories().first, open: _openDelete),
+  const QaScreen('sheet-export', route: Routes.MAIN_NAV, open: _openExportSheet),
+  QaScreen('bagikan-gambar', route: Routes.SHARE_CARD, arguments: DateTime(2026, 9)),
+  QaScreen('bagikan-gambar-feed', route: Routes.SHARE_CARD, arguments: DateTime(2026, 9), open: _feedHidden),
   // Fase 1: semua komponen inti sekaligus.
   QaScreen('galeri-komponen', page: () => const ComponentGalleryPage()),
 ];
 
 Future<void> _anggaran(WidgetTester t) => _tab(t, 'Anggaran');
 Future<void> _statistik(WidgetTester t) => _tab(t, 'Statistik');
+
+Future<void> _openExportSheet(WidgetTester t) async {
+  await _tab(t, 'Statistik');
+  await tapAny(t, [find.text('Export & bagikan')], what: 'tombol Export & bagikan');
+}
+
+/// Format Feed + nominal disembunyikan.
+Future<void> _feedHidden(WidgetTester t) async {
+  await tapAny(t, [find.text('Feed')], what: 'segmen Feed');
+  await tapAny(t, [find.text('Sembunyikan nominal')], what: 'toggle Sembunyikan nominal');
+}
 
 /// Nama tampilan ringkas untuk pesan kegagalan.
 String describe(QaScreen s, Brightness b) => '${s.name} (${b.name})';

@@ -14,6 +14,8 @@ import '../modules/category_create/bindings/category_create_binding.dart';
 import '../modules/category_create/views/category_create_view.dart';
 import '../modules/category_list/bindings/category_list_binding.dart';
 import '../modules/category_list/views/category_list_view.dart';
+import '../modules/share_card/bindings/share_card_binding.dart';
+import '../modules/share_card/views/share_card_view.dart';
 
 part 'app_routes.dart';
 
@@ -30,5 +32,6 @@ class AppPages {
     GetPage(name: _Paths.EXPANSE_CREATE, page: () => const ExpanseCreateView(), binding: ExpanseCreateBinding(), fullscreenDialog: true),
     GetPage(name: _Paths.CATEGORY_CREATE, page: () => const CategoryCreateView(), binding: CategoryCreateBinding()),
     GetPage(name: _Paths.CATEGORY_LIST, page: () => const CategoryListView(), binding: CategoryListBinding()),
+    GetPage(name: _Paths.SHARE_CARD, page: () => const ShareCardView(), binding: ShareCardBinding()),
   ];
 }

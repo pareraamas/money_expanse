@@ -4,6 +4,7 @@ import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
 import 'package:money_expense/app/modules/main_nav/controllers/main_nav_controller.dart';
+import 'package:money_expense/app/ui/ui.dart';
 import 'package:money_expense/app/widgets/app_snackbar.dart';
 
 class CategoryCreateController extends GetxController {
@@ -11,9 +12,9 @@ class CategoryCreateController extends GetxController {
 
   static const maxLabelLength = 24;
 
-  /// 9 warna & 9 ikon sama persis dengan kategori bawaan (disimpan di SQLite).
+  /// 9 warna sama persis dengan kategori bawaan (disimpan di SQLite).
   static final availableColors = [for (final t in ExpenseType.values) t.color];
-  static final availableIcons = [for (final t in ExpenseType.values) t.icon];
+  static const availableIcons = CategoryIcons.all;
 
   late final Rx<Color> selectedColor;
   late final RxString selectedIcon;

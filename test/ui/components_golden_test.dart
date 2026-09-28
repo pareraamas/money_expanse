@@ -48,7 +48,7 @@ void main() {
             Wrap(
               spacing: AppSpacing.s8,
               children: [
-                for (final (i, icon) in CategoryIcons.all.indexed)
+                for (final (i, icon) in CategoryIcons.legacy.indexed)
                   CategoryBlob(iconAsset: icon, color: [c.brand, c.income, c.warning, c.danger, c.expense][i % 5]),
               ],
             ),

@@ -14,7 +14,6 @@ class StatistikView extends GetView<StatistikController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, title: const Text('Statistik')),
       body: Obx(() {
         final month = controller.selectedMonth.value;
         return RefreshIndicator(
@@ -22,19 +21,7 @@ class StatistikView extends GetView<StatistikController> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Center(
-                  child: MonthSwitcher(
-                    month: month,
-                    onPrev: controller.goToPreviousMonth,
-                    onNext: controller.goToNextMonth,
-                    onTap: () async {
-                      final picked = await showMonthYearPickerSheet(context, month);
-                      if (picked != null) controller.setMonth(picked);
-                    },
-                  ),
-                ),
-              ),
+              PageAppBar(title: 'Statistik', trailing: _monthSwitcher(context, month)),
               ..._content(context),
               const SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
@@ -44,10 +31,24 @@ class StatistikView extends GetView<StatistikController> {
     );
   }
 
+  Widget _monthSwitcher(BuildContext context, DateTime month) {
+    return MonthSwitcher(
+      month: month,
+      onPrev: controller.goToPreviousMonth,
+      onNext: controller.goToNextMonth,
+      onTap: () async {
+        final picked = await showMonthYearPickerSheet(context, month);
+        if (picked != null) controller.setMonth(picked);
+      },
+    );
+  }
+
   List<Widget> _content(BuildContext context) {
     if (controller.isLoading.value) {
       return const [
-        SliverToBoxAdapter(child: SkeletonList(itemCount: 3, shape: SkeletonShape.card, padding: EdgeInsets.all(AppSpacing.page))),
+        SliverToBoxAdapter(
+          child: SkeletonList(itemCount: 3, shape: SkeletonShape.card, padding: EdgeInsets.all(AppSpacing.page)),
+        ),
       ];
     }
     final hasAny = controller.totalIncome.value > 0 || controller.totalExpense.value > 0;
@@ -78,10 +79,7 @@ class StatistikView extends GetView<StatistikController> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.card),
-                  child: Text(
-                    'Belum ada pengeluaran bulan ini.',
-                    style: context.text.bodyLarge?.copyWith(color: context.colors.inkMuted),
-                  ),
+                  child: Text('Belum ada pengeluaran bulan ini.', style: context.text.bodyLarge?.copyWith(color: context.colors.inkMuted)),
                 ),
               )
             else ...[
@@ -92,11 +90,62 @@ class StatistikView extends GetView<StatistikController> {
                 const SizedBox(height: AppSpacing.s8),
               ],
             ],
+            const SizedBox(height: AppSpacing.s16),
+            // Header sudah penuh (judul + pemilih bulan), jadi aksi export di akhir ringkasan.
+            Builder(
+              builder: (context) => OutlinedButton.icon(
+                onPressed: () => _showExportSheet(context),
+                icon: const Icon(AppIcons.shareNetwork),
+                label: const Text('Export & bagikan'),
+              ),
+            ),
           ],
         ),
       ),
     ];
   }
+}
+
+/// Pilihan export. [anchor] = tombol pemicu, jadi jangkar share sheet di iPad.
+void _showExportSheet(BuildContext anchor) {
+  final controller = Get.find<StatistikController>();
+  final box = anchor.findRenderObject() as RenderBox?;
+  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  final month = AppFormat.monthYear(controller.selectedMonth.value);
+
+  Widget option(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) => ListTile(
+    leading: Icon(icon, color: context.colors.brand),
+    title: Text(title),
+    subtitle: Text(subtitle, style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
+    contentPadding: EdgeInsets.zero,
+    onTap: () {
+      Navigator.of(context).pop();
+      onTap();
+    },
+  );
+
+  AppSheet.show<void>(
+    anchor,
+    title: 'Export & bagikan',
+    child: Builder(
+      builder: (context) => SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            option(context, AppIcons.image, 'Bagikan sebagai gambar', 'Kartu ringkasan $month untuk Story atau Feed', controller.openShareCard),
+            option(context, AppIcons.fileCsv, 'Export CSV bulan ini', 'Transaksi $month', () => controller.exportCsv(origin: origin)),
+            option(
+              context,
+              AppIcons.fileCsv,
+              'Export CSV semua transaksi',
+              'Bisa dibuka di Excel atau Google Sheets',
+              () => controller.exportCsv(allTime: true, origin: origin),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Color _sliceColor(BuildContext context, DonutSlice s) => s.category?.color ?? context.colors.outline;
@@ -209,8 +258,16 @@ class _DonutState extends State<_Donut> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(centerLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: context.text.labelMedium?.copyWith(color: c.inkMuted)),
-                  FittedBox(fit: BoxFit.scaleDown, child: AmountText(centerAmount, fontWeight: FontWeight.w700)),
+                  Text(
+                    centerLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.labelMedium?.copyWith(color: c.inkMuted),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: AmountText(centerAmount, fontWeight: FontWeight.w700),
+                  ),
                 ],
               ),
             ),
@@ -243,14 +300,19 @@ class _RankRow extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 24,
-                  child: Text('$rank', style: context.text.labelLarge?.copyWith(color: c.inkMuted, fontFeatures: AppTypography.tabular)),
+                  child: Text(
+                    '$rank',
+                    style: context.text.labelLarge?.copyWith(color: c.inkMuted, fontFeatures: AppTypography.tabular),
+                  ),
                 ),
                 if (category != null)
                   CategoryBlob(iconAsset: category.icon, color: category.color, size: CategoryBlobSize.small)
                 else
                   SizedBox.square(
                     dimension: 32,
-                    child: DecoratedBox(decoration: BoxDecoration(color: c.surfaceContainerHighest, shape: BoxShape.circle)),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: c.surfaceContainerHighest, shape: BoxShape.circle),
+                    ),
                   ),
                 const SizedBox(width: AppSpacing.s12),
                 Expanded(child: Text(slice.label, style: context.text.titleSmall)),

@@ -1,0 +1,40 @@
+import 'package:csv/csv.dart';
+import 'package:money_expense/app/data/models/expense.dart';
+
+/// Format CSV transaksi. Header & isi kolom adalah kontrak: file hasil export
+/// harus bisa di-import kembali, jadi jangan diubah tanpa menjaga kompatibilitas.
+///
+/// Memakai `Csv.excel()` (pemisah `;` + BOM UTF-8) karena Excel berlokal
+/// Indonesia memakai `;` sebagai pemisah daftar; Google Sheets & Numbers
+/// mendeteksinya otomatis.
+abstract final class TransactionCsv {
+  static const headers = ['Tanggal', 'Jenis', 'Kategori', 'Nama', 'Jumlah', 'ID'];
+
+  static const income = 'Pemasukan';
+  static const expense = 'Pengeluaran';
+
+  static String encode(List<Expense> expenses) {
+    final rows = <List<Object?>>[
+      headers,
+      for (final e in expenses)
+        [
+          formatDate(e.dateTime),
+          e.transactionType == 'income' ? income : expense,
+          e.category?.label ?? '',
+          e.name,
+          formatAmount(e.price),
+          e.id ?? '',
+        ],
+    ];
+    return Csv.excel().encode(rows);
+  }
+
+  /// "2026-09-28 14:30" — urut secara teks dan tidak bergantung locale.
+  static String formatDate(DateTime d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${d.year.toString().padLeft(4, '0')}-${two(d.month)}-${two(d.day)} ${two(d.hour)}:${two(d.minute)}';
+  }
+
+  /// Angka mentah tanpa pemisah ribuan: "25000", atau "2500.5" bila berdesimal.
+  static String formatAmount(double price) => price == price.roundToDouble() ? price.round().toString() : price.toString();
+}

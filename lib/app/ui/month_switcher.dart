@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import 'app_icons.dart';
 import 'app_format.dart';
 
-/// Chip bulan aktif ("September 2026") dengan panah kiri/kanan.
+/// Chip bulan aktif ("Sep 2026") dengan panah kiri/kanan.
 ///
 /// Memakai method prev/next yang sudah ada di controller; [onTap] membuka
 /// pemilih bulan (opsional).
@@ -19,14 +19,14 @@ class MonthSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final label = AppFormat.monthYear(month);
+    final label = AppFormat.monthYearShort(month);
     final reduced = AppMotion.reduced(context);
 
     final text = Text(
       label,
       key: ValueKey(label),
       maxLines: 1,
-      style: context.text.labelLarge?.copyWith(color: c.ink, fontFeatures: AppTypography.tabular),
+      style: context.text.labelMedium?.copyWith(color: c.ink, fontFeatures: AppTypography.tabular),
     );
 
     return Row(
@@ -35,11 +35,13 @@ class MonthSwitcher extends StatelessWidget {
         IconButton(
           onPressed: onPrev,
           tooltip: 'Bulan sebelumnya',
+          iconSize: 20,
+          visualDensity: VisualDensity.compact,
           icon: const Icon(AppIcons.caretLeft, semanticLabel: 'Bulan sebelumnya'),
         ),
         Semantics(
           button: onTap != null,
-          label: 'Bulan aktif $label',
+          label: 'Bulan aktif ${AppFormat.monthYear(month)}',
           excludeSemantics: true,
           child: Material(
             color: c.surfaceContainerLow,
@@ -48,14 +50,14 @@ class MonthSwitcher extends StatelessWidget {
             child: InkWell(
               onTap: onTap,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: AppSpacing.minTouch),
+                constraints: const BoxConstraints(minHeight: AppSpacing.s40),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(AppIcons.calendarBlank, size: 18, color: c.brand),
-                      const SizedBox(width: AppSpacing.s8),
+                      Icon(AppIcons.calendarBlank, size: 16, color: c.brand),
+                      const SizedBox(width: AppSpacing.s8 - 2),
                       AnimatedSwitcher(
                         duration: reduced ? AppMotion.short : AppMotion.medium,
                         switchInCurve: AppMotion.standard,
@@ -81,6 +83,8 @@ class MonthSwitcher extends StatelessWidget {
         IconButton(
           onPressed: onNext,
           tooltip: 'Bulan berikutnya',
+          iconSize: 20,
+          visualDensity: VisualDensity.compact,
           icon: const Icon(AppIcons.caretRight, semanticLabel: 'Bulan berikutnya'),
         ),
       ],

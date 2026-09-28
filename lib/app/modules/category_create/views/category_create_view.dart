@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:money_expense/app/data/models/expense_type.dart';
 import 'package:money_expense/app/theme/app_theme.dart';
 import 'package:money_expense/app/ui/ui.dart';
 
@@ -193,24 +192,24 @@ class _IconPicker extends GetView<CategoryCreateController> {
         spacing: AppSpacing.s8,
         runSpacing: AppSpacing.s8,
         children: [
-          for (final type in ExpenseType.values)
+          for (final icon in CategoryIcons.all)
             Semantics(
               button: true,
-              selected: type.icon == selectedIcon,
-              label: 'Ikon ${type.label}',
+              selected: icon == selectedIcon,
+              label: 'Ikon ${CategoryIcons.labelOf(icon)}',
               excludeSemantics: true,
               child: Material(
-                color: type.icon == selectedIcon ? c.brandContainer : c.surfaceContainerLow,
+                color: icon == selectedIcon ? c.brandContainer : c.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
                   borderRadius: AppRadius.inputAll,
-                  side: BorderSide(color: type.icon == selectedIcon ? c.brand : c.outlineVariant, width: type.icon == selectedIcon ? 2 : 1),
+                  side: BorderSide(color: icon == selectedIcon ? c.brand : c.outlineVariant, width: icon == selectedIcon ? 2 : 1),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () => controller.selectIcon(type.icon),
+                  onTap: () => controller.selectIcon(icon),
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.s8),
-                    child: CategoryBlob(iconAsset: type.icon, color: color),
+                    child: CategoryBlob(iconAsset: icon, color: color),
                   ),
                 ),
               ),

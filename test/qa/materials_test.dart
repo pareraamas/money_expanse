@@ -52,13 +52,21 @@ void main() {
 
   group('ikon kategori', () {
     test('path lama di SQLite tetap ada', () {
-      expect(CategoryIcons.all.toSet(), _legacyCategoryIcons.toSet());
+      expect(CategoryIcons.legacy.toSet(), _legacyCategoryIcons.toSet());
+      expect(CategoryIcons.all, containsAll(_legacyCategoryIcons));
+      expect(CategoryIcons.all.toSet(), hasLength(CategoryIcons.all.length), reason: 'ada ikon ganda');
       for (final t in ExpenseType.values) {
         expect(_legacyCategoryIcons, contains(t.icon), reason: '${t.name} menyimpan path ikon baru');
       }
     });
 
-    for (final path in _legacyCategoryIcons) {
+    test('setiap ikon punya label screen reader', () {
+      for (final path in CategoryIcons.all) {
+        expect(CategoryIcons.labels, contains(path), reason: path);
+      }
+    });
+
+    for (final path in CategoryIcons.all) {
       test('$path hanya putih/currentColor agar bisa di-tint', () {
         final svg = File(path).readAsStringSync();
         final others = _hexColors(svg).where((c) => c != 0xFFFFFF).map((c) => '#${c.toRadixString(16)}');
@@ -67,7 +75,7 @@ void main() {
     }
   });
 
-  for (final path in [..._illustrations, ..._legacyCategoryIcons]) {
+  for (final path in [..._illustrations, ...CategoryIcons.all]) {
     group(path, () {
       test('ada di bundle & < 8 KB', () async {
         final data = await rootBundle.load(path);

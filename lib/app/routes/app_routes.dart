@@ -10,6 +10,7 @@ abstract class Routes {
   static const EXPANSE_CREATE = _Paths.EXPANSE_CREATE;
   static const CATEGORY_CREATE = _Paths.CATEGORY_CREATE;
   static const CATEGORY_LIST = _Paths.CATEGORY_LIST;
+  static const SHARE_CARD = _Paths.SHARE_CARD;
 }
 
 abstract class _Paths {
@@ -21,4 +22,5 @@ abstract class _Paths {
   static const EXPANSE_CREATE = '/expanse-create';
   static const CATEGORY_CREATE = '/category-create';
   static const CATEGORY_LIST = '/category-list';
+  static const SHARE_CARD = '/share-card';
 }

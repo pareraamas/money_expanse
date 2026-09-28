@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
 import '../ui.dart';
+import '../../widgets/app_snackbar.dart';
 
 /// Halaman debug untuk me-review semua komponen inti di light & dark.
 ///
@@ -211,7 +212,7 @@ class _ComponentGalleryPageState extends State<ComponentGalleryPage> {
             onPressed: () async {
               final ok = await ConfirmDialog.show(context, title: 'Hapus kategori?', message: 'Kategori "Makan" akan dihapus.');
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ok ? 'Dihapus' : 'Dibatalkan')));
+                showAppSnackBar(ok ? 'Dihapus' : 'Dibatalkan');
               }
             },
             child: const Text('Buka ConfirmDialog'),

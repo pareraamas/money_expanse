@@ -17,55 +17,50 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: controller.onRefresh,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (n) {
-              if (n.metrics.extentAfter < 240) controller.onLoad();
-              return false;
-            },
-            child: Obx(
-              () => CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.s16, AppSpacing.page, 0),
-                    sliver: SliverList.list(
-                      children: [
-                        _Header(controller: controller),
-                        const SizedBox(height: AppSpacing.s20),
-                        BalanceCard(
-                          amount: controller.totalBalance.value,
-                          caption: 'Semua pemasukan dikurangi pengeluaran',
-                        ),
-                        const SizedBox(height: AppSpacing.stack),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _MonthTotal(label: 'Masuk bulan ini', amount: controller.totalIncomeMonth.value, kind: AmountKind.income),
-                            ),
-                            const SizedBox(width: AppSpacing.stack),
-                            Expanded(
-                              child: _MonthTotal(label: 'Keluar bulan ini', amount: controller.totalOutcomeMonth.value, kind: AmountKind.expense),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.stack),
-                        _TodayRow(amount: controller.totalOutcomeDay.value),
-                        const SizedBox(height: AppSpacing.section),
-                        Semantics(
-                          header: true,
-                          child: Text('Riwayat transaksi', style: context.text.titleLarge),
-                        ),
-                      ],
-                    ),
+      body: RefreshIndicator(
+        onRefresh: controller.onRefresh,
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (n) {
+            if (n.metrics.extentAfter < 240) controller.onLoad();
+            return false;
+          },
+          child: Obx(
+            () => CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                PageAppBar(
+                  title: controller.greeting,
+                  trailing: _MonthChip(month: controller.currentMonth),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, 0),
+                  sliver: SliverList.list(
+                    children: [
+                      Text('Jangan lupa catat keuanganmu hari ini.', style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
+                      const SizedBox(height: AppSpacing.s20),
+                      BalanceCard(amount: controller.totalBalance.value, caption: 'Semua pemasukan dikurangi pengeluaran'),
+                      const SizedBox(height: AppSpacing.stack),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MonthTotal(label: 'Masuk bulan ini', amount: controller.totalIncomeMonth.value, kind: AmountKind.income),
+                          ),
+                          const SizedBox(width: AppSpacing.stack),
+                          Expanded(
+                            child: _MonthTotal(label: 'Keluar bulan ini', amount: controller.totalOutcomeMonth.value, kind: AmountKind.expense),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.stack),
+                      _TodayRow(amount: controller.totalOutcomeDay.value),
+                      const SizedBox(height: AppSpacing.section),
+                      Semantics(header: true, child: Text('Riwayat transaksi', style: context.text.titleLarge)),
+                    ],
                   ),
-                  ..._history(context),
-                  const SliverToBoxAdapter(child: SizedBox(height: _fabClearance)),
-                ],
-              ),
+                ),
+                ..._history(context),
+                const SliverToBoxAdapter(child: SizedBox(height: _fabClearance)),
+              ],
             ),
           ),
         ),
@@ -75,14 +70,10 @@ class HomeView extends GetView<HomeController> {
 
   List<Widget> _history(BuildContext context) {
     if (controller.isLoading.value) {
-      return const [
-        SliverToBoxAdapter(child: SkeletonList(itemCount: 4, padding: EdgeInsets.all(AppSpacing.page))),
-      ];
+      return const [SliverToBoxAdapter(child: SkeletonList(itemCount: 4, padding: EdgeInsets.all(AppSpacing.page)))];
     }
     if (controller.listExpenses.isEmpty) {
-      return [
-        SliverToBoxAdapter(child: EmptyState.beranda(onAction: controller.openCreate, illustrationSize: 140)),
-      ];
+      return [SliverToBoxAdapter(child: EmptyState.beranda(onAction: controller.openCreate, illustrationSize: 140))];
     }
 
     final reduced = AppMotion.reduced(context);
@@ -94,7 +85,9 @@ class HomeView extends GetView<HomeController> {
       groups.add(
         SliverMainAxisGroup(
           slivers: [
-            PinnedHeaderSliver(child: _DateHeader(date: entry.key, expenses: entry.value)),
+            PinnedHeaderSliver(
+              child: _DateHeader(date: entry.key, expenses: entry.value),
+            ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
               sliver: SliverList.separated(
@@ -137,40 +130,21 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({required this.controller});
+/// Label bulan aktif: ringkasan Masuk/Keluar di bawah selalu bulan ini.
+class _MonthChip extends StatelessWidget {
+  const _MonthChip({required this.month});
 
-  final HomeController controller;
+  final DateTime month;
 
   @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(controller.greeting, style: context.text.headlineSmall),
-              const SizedBox(height: AppSpacing.s2),
-              Text('Jangan lupa catat keuanganmu hari ini.', style: context.text.bodyMedium?.copyWith(color: c.inkMuted)),
-            ],
-          ),
-        ),
-        const SizedBox(width: AppSpacing.s8),
-        // Label bulan aktif: ringkasan Masuk/Keluar di bawah selalu bulan ini.
-        Semantics(
-          label: 'Ringkasan bulan ${AppFormat.monthYear(controller.currentMonth)}',
-          excludeSemantics: true,
-          child: Chip(
-            avatar: Icon(AppIcons.calendarBlank, color: c.brand),
-            label: Text(AppFormat.monthYearShort(controller.currentMonth)),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Semantics(
+    label: 'Ringkasan bulan ${AppFormat.monthYear(month)}',
+    excludeSemantics: true,
+    child: Chip(
+      avatar: Icon(AppIcons.calendarBlank, color: context.colors.brand),
+      label: Text(AppFormat.monthYearShort(month)),
+    ),
+  );
 }
 
 class _MonthTotal extends StatelessWidget {
@@ -221,10 +195,7 @@ class _TodayRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.card, vertical: AppSpacing.s12),
         child: Row(
           children: [
-            if (empty) ...[
-              const AppIllustration(AppIllustrations.hariIniKosong, size: 40),
-              const SizedBox(width: AppSpacing.s12),
-            ],
+            if (empty) ...[const AppIllustration(AppIllustrations.hariIniKosong, size: 40), const SizedBox(width: AppSpacing.s12)],
             Expanded(
               child: Text(
                 empty ? 'Hari ini belum ada pengeluaran' : 'Keluar hari ini',

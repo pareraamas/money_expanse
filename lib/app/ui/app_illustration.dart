@@ -42,7 +42,8 @@ enum DompiMood {
 }
 
 /// Ikon kategori bawaan (SVG putih 24×24). Path disimpan di SQLite sebagai
-/// `Category.icon`, jadi nilainya tidak boleh diubah.
+/// `Category.icon`, jadi nilainya tidak boleh diubah; ikon baru hanya boleh
+/// ditambahkan.
 abstract final class CategoryIcons {
   static const basketball = 'assets/uil_basketball.svg';
   static const bookOpen = 'assets/uil_book-open.svg';
@@ -54,7 +55,132 @@ abstract final class CategoryIcons {
   static const rssAlt = 'assets/uil_rss-alt.svg';
   static const shoppingCart = 'assets/uil_shopping-cart.svg';
 
-  static const List<String> all = [pizzaSlice, rssAlt, bookOpen, gift, carSideview, shoppingCart, home, basketball, clapperBoard];
+  // Tambahan redesign.
+  static const coffee = 'assets/uil_coffee.svg';
+  static const utensils = 'assets/uil_utensils.svg';
+  static const bus = 'assets/uil_bus.svg';
+  static const gasStation = 'assets/uil_gas-station.svg';
+  static const motorcycle = 'assets/uil_motorcycle.svg';
+  static const plane = 'assets/uil_plane.svg';
+  static const luggage = 'assets/uil_luggage.svg';
+  static const heartPulse = 'assets/uil_heart-pulse.svg';
+  static const pill = 'assets/uil_pill.svg';
+  static const shirt = 'assets/uil_shirt.svg';
+  static const shoppingBag = 'assets/uil_shopping-bag.svg';
+  static const scissors = 'assets/uil_scissors.svg';
+  static const smartphone = 'assets/uil_smartphone.svg';
+  static const wifi = 'assets/uil_wifi.svg';
+  static const monitor = 'assets/uil_monitor.svg';
+  static const bolt = 'assets/uil_bolt.svg';
+  static const droplet = 'assets/uil_droplet.svg';
+  static const receipt = 'assets/uil_receipt.svg';
+  static const building = 'assets/uil_building.svg';
+  static const wrench = 'assets/uil_wrench.svg';
+  static const stroller = 'assets/uil_stroller.svg';
+  static const paw = 'assets/uil_paw.svg';
+  static const gamepad = 'assets/uil_gamepad.svg';
+  static const music = 'assets/uil_music.svg';
+  static const dumbbell = 'assets/uil_dumbbell.svg';
+  static const graduationCap = 'assets/uil_graduation-cap.svg';
+  static const briefcase = 'assets/uil_briefcase.svg';
+  static const wallet = 'assets/uil_wallet.svg';
+  static const money = 'assets/uil_money.svg';
+  static const creditCard = 'assets/uil_credit-card.svg';
+  static const piggyBank = 'assets/uil_piggy-bank.svg';
+  static const chartLine = 'assets/uil_chart-line.svg';
+  static const handHeart = 'assets/uil_hand-heart.svg';
+  static const tag = 'assets/uil_tag.svg';
+
+  /// Ikon kategori bawaan lama (rilis sebelum redesign), urut seperti `ExpenseType`.
+  static const List<String> legacy = [pizzaSlice, rssAlt, bookOpen, gift, carSideview, shoppingCart, home, basketball, clapperBoard];
+
+  /// Semua ikon yang bisa dipilih, urut sesuai tampilan di pemilih ikon.
+  static const List<String> all = [
+    ...legacy,
+    coffee,
+    utensils,
+    bus,
+    gasStation,
+    motorcycle,
+    plane,
+    luggage,
+    heartPulse,
+    pill,
+    shirt,
+    shoppingBag,
+    scissors,
+    smartphone,
+    wifi,
+    monitor,
+    bolt,
+    droplet,
+    receipt,
+    building,
+    wrench,
+    stroller,
+    paw,
+    gamepad,
+    music,
+    dumbbell,
+    graduationCap,
+    briefcase,
+    wallet,
+    money,
+    creditCard,
+    piggyBank,
+    chartLine,
+    handHeart,
+    tag,
+  ];
+
+  /// Label untuk screen reader di pemilih ikon.
+  static const Map<String, String> labels = {
+    pizzaSlice: 'Makanan',
+    rssAlt: 'Internet',
+    bookOpen: 'Pendidikan',
+    gift: 'Hadiah',
+    carSideview: 'Transport',
+    shoppingCart: 'Belanja',
+    home: 'Rumah',
+    basketball: 'Olahraga',
+    clapperBoard: 'Hiburan',
+    coffee: 'Kopi',
+    utensils: 'Restoran',
+    bus: 'Bus',
+    gasStation: 'Bensin',
+    motorcycle: 'Motor',
+    plane: 'Pesawat',
+    luggage: 'Liburan',
+    heartPulse: 'Kesehatan',
+    pill: 'Obat',
+    shirt: 'Pakaian',
+    shoppingBag: 'Tas belanja',
+    scissors: 'Perawatan',
+    smartphone: 'Pulsa',
+    wifi: 'Wi-Fi',
+    monitor: 'Streaming',
+    bolt: 'Listrik',
+    droplet: 'Air',
+    receipt: 'Tagihan',
+    building: 'Sewa',
+    wrench: 'Servis',
+    stroller: 'Anak',
+    paw: 'Hewan peliharaan',
+    gamepad: 'Game',
+    music: 'Musik',
+    dumbbell: 'Gym',
+    graduationCap: 'Sekolah',
+    briefcase: 'Kerja',
+    wallet: 'Dompet',
+    money: 'Uang tunai',
+    creditCard: 'Kartu kredit',
+    piggyBank: 'Tabungan',
+    chartLine: 'Investasi',
+    handHeart: 'Donasi',
+    tag: 'Lainnya',
+  };
+
+  static String labelOf(String icon) => labels[icon] ?? 'Ikon kategori';
 }
 
 /// Memetakan warna terang bawaan ilustrasi ke token tema aktif, sehingga

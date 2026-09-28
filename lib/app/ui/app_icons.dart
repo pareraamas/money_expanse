@@ -31,6 +31,9 @@ abstract final class AppIcons {
   static const magnifyingGlass = IconData(0xe30c, fontFamily: _regular, fontPackage: _pkg);
   static const sun = IconData(0xe472, fontFamily: _regular, fontPackage: _pkg);
   static const moon = IconData(0xe330, fontFamily: _regular, fontPackage: _pkg);
+  static const shareNetwork = IconData(0xe408, fontFamily: _regular, fontPackage: _pkg);
+  static const image = IconData(0xe2ca, fontFamily: _regular, fontPackage: _pkg);
+  static const fileCsv = IconData(0xeb1c, fontFamily: _regular, fontPackage: _pkg);
 
   // Ikon berarah, ikut dicerminkan di bahasa RTL.
   static const caretLeft = IconData(0xe138, fontFamily: _regular, fontPackage: _pkg, matchTextDirection: true);

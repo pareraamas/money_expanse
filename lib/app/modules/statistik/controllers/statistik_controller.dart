@@ -1,7 +1,13 @@
+import 'dart:ui';
+
 import 'package:get/get.dart';
 import 'package:money_expense/app/ults/clock.dart';
 import 'package:money_expense/app/data/models/category_model.dart';
 import 'package:money_expense/app/data/repositories/expense_repository.dart';
+import 'package:money_expense/app/data/services/share_service.dart';
+import 'package:money_expense/app/data/services/transaction_csv.dart';
+import 'package:money_expense/app/routes/app_pages.dart';
+import 'package:money_expense/app/widgets/app_snackbar.dart';
 
 class StatistikController extends GetxController {
   final ExpenseRepository _repository = Get.find<ExpenseRepository>();
@@ -26,9 +32,7 @@ class StatistikController extends GetxController {
 
   List<DonutSlice> get donutSlices {
     final sorted = categoriesWithSpending;
-    final slices = [
-      for (final c in sorted.take(maxSlices)) DonutSlice(category: c, amount: spendingByCategory[c.id] ?? 0),
-    ];
+    final slices = [for (final c in sorted.take(maxSlices)) DonutSlice(category: c, amount: spendingByCategory[c.id] ?? 0)];
     if (sorted.length > maxSlices) {
       final rest = sorted.skip(maxSlices).fold(0.0, (sum, c) => sum + (spendingByCategory[c.id] ?? 0));
       slices.add(DonutSlice(category: null, amount: rest));
@@ -75,6 +79,29 @@ class StatistikController extends GetxController {
   void setMonth(DateTime month) {
     selectedMonth.value = DateTime(month.year, month.month);
     loadData();
+  }
+
+  // --- Export & bagikan ---
+
+  void openShareCard() => Get.toNamed(Routes.SHARE_CARD, arguments: selectedMonth.value);
+
+  /// Export transaksi bulan terpilih, atau semua transaksi bila [allTime].
+  Future<void> exportCsv({bool allTime = false, Rect? origin}) async {
+    final month = selectedMonth.value;
+    final expenses = allTime
+        ? await _repository.getExpensesByDateRange(DateTime(2000), DateTime(2100))
+        : await _repository.getExpensesForMonth(month);
+    if (expenses.isEmpty) {
+      showAppSnackBar('Belum ada transaksi untuk diekspor.');
+      return;
+    }
+    final ordered = expenses.reversed.toList(); // lama → baru, seperti buku kas
+    final name = allTime ? 'transaksi-semua' : 'transaksi-${TransactionCsv.formatDate(month).substring(0, 7)}';
+    try {
+      await Get.find<ShareService>().shareCsv(TransactionCsv.encode(ordered), '$name.csv', origin: origin);
+    } catch (_) {
+      showAppSnackBar('Gagal mengekspor CSV. Coba lagi.');
+    }
   }
 }
 

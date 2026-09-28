@@ -23,6 +23,7 @@ class ExpanseCreateController extends GetxController {
 
   /// Catatan opsional (kolom `name`). Kosong → pakai nama kategori.
   late TextEditingController nameController;
+  final noteFocus = FocusNode();
 
   final selectedDate = Clock.now().obs;
   final selectedCategory = Rxn<Category>();
@@ -56,6 +57,16 @@ class ExpanseCreateController extends GetxController {
 
   String get dateLabel => DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(selectedDate.value);
 
+  /// Label ringkas untuk chip tanggal: "Hari ini", "Kemarin", atau "Sen, 21 Sep".
+  String get dateShortLabel {
+    final now = Clock.now();
+    final d = selectedDate.value;
+    final days = DateTime(now.year, now.month, now.day).difference(DateTime(d.year, d.month, d.day)).inDays;
+    if (days == 0) return 'Hari ini';
+    if (days == 1) return 'Kemarin';
+    return DateFormat(d.year == now.year ? 'EEE, d MMM' : 'd MMM yyyy', 'id_ID').format(d);
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -77,6 +88,7 @@ class ExpanseCreateController extends GetxController {
   void onClose() {
     _closeFallback?.cancel();
     nameController.dispose();
+    noteFocus.dispose();
     super.onClose();
   }
 

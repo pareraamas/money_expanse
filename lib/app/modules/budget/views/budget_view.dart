@@ -15,21 +15,6 @@ class BudgetView extends GetView<BudgetController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Anggaran'),
-        actions: [
-          IconButton(
-            icon: const Icon(AppIcons.tag),
-            tooltip: 'Kelola kategori',
-            onPressed: () async {
-              await Get.toNamed(Routes.CATEGORY_LIST);
-              MainNavController.refreshAll();
-            },
-          ),
-          const SizedBox(width: AppSpacing.s4),
-        ],
-      ),
       body: Obx(() {
         final month = controller.selectedMonth.value;
         return RefreshIndicator(
@@ -37,17 +22,21 @@ class BudgetView extends GetView<BudgetController> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Center(
-                  child: MonthSwitcher(
-                    month: month,
-                    onPrev: controller.goToPreviousMonth,
-                    onNext: controller.goToNextMonth,
-                    onTap: () async {
-                      final picked = await showMonthYearPickerSheet(context, month);
-                      if (picked != null) controller.setMonth(picked);
-                    },
-                  ),
+              PageAppBar(
+                title: 'Anggaran',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _monthSwitcher(context, month),
+                    IconButton(
+                      icon: const Icon(AppIcons.tag),
+                      tooltip: 'Kelola kategori',
+                      onPressed: () async {
+                        await Get.toNamed(Routes.CATEGORY_LIST);
+                        MainNavController.refreshAll();
+                      },
+                    ),
+                  ],
                 ),
               ),
               ..._content(context),
@@ -60,10 +49,24 @@ class BudgetView extends GetView<BudgetController> {
     );
   }
 
+  Widget _monthSwitcher(BuildContext context, DateTime month) {
+    return MonthSwitcher(
+      month: month,
+      onPrev: controller.goToPreviousMonth,
+      onNext: controller.goToNextMonth,
+      onTap: () async {
+        final picked = await showMonthYearPickerSheet(context, month);
+        if (picked != null) controller.setMonth(picked);
+      },
+    );
+  }
+
   List<Widget> _content(BuildContext context) {
     if (controller.isLoading.value) {
       return const [
-        SliverToBoxAdapter(child: SkeletonList(itemCount: 4, shape: SkeletonShape.budget, padding: EdgeInsets.all(AppSpacing.page))),
+        SliverToBoxAdapter(
+          child: SkeletonList(itemCount: 4, shape: SkeletonShape.budget, padding: EdgeInsets.all(AppSpacing.page)),
+        ),
       ];
     }
     if (controller.categories.isEmpty) {
@@ -83,10 +86,7 @@ class BudgetView extends GetView<BudgetController> {
         sliver: SliverList.list(
           children: [
             if (withBudget.isEmpty)
-              EmptyState.anggaran(
-                illustrationSize: 120,
-                onAction: () => _openSheet(context, without.first),
-              )
+              EmptyState.anggaran(illustrationSize: 120, onAction: () => _openSheet(context, without.first))
             else ...[
               _RemainingCard(controller: controller),
               const SizedBox(height: AppSpacing.section),
@@ -171,22 +171,14 @@ class _RemainingCard extends StatelessWidget {
                   ),
                 ),
                 // Dompi hanya di momen aman, tidak saat over-budget.
-                if (controller.allUnderPace)
-                  AppIllustration.dompi(DompiMood.bangga, size: 72, semanticLabel: 'Dompi bangga, semua anggaran aman'),
+                if (controller.allUnderPace) AppIllustration.dompi(DompiMood.bangga, size: 72, semanticLabel: 'Dompi bangga, semua anggaran aman'),
               ],
             ),
             const SizedBox(height: AppSpacing.s12),
-            BudgetProgress.fromAmounts(
-              used: controller.budgetedSpent,
-              budget: controller.totalBudget,
-              pace: controller.paceMarker,
-            ),
+            BudgetProgress.fromAmounts(used: controller.budgetedSpent, budget: controller.totalBudget, pace: controller.paceMarker),
             if (controller.paceMarker != null) ...[
               const SizedBox(height: AppSpacing.s8),
-              Text(
-                'Garis tegak = posisi hari ini di bulan ini.',
-                style: context.text.bodySmall?.copyWith(color: c.inkMuted),
-              ),
+              Text('Garis tegak = posisi hari ini di bulan ini.', style: context.text.bodySmall?.copyWith(color: c.inkMuted)),
             ],
           ],
         ),
@@ -260,8 +252,7 @@ class _UnbudgetedTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(category.label, style: context.text.titleSmall),
-                    if (spent > 0)
-                      Text('Terpakai ${AppFormat.rupiah(spent)}', style: context.text.bodySmall?.copyWith(color: c.inkMuted)),
+                    if (spent > 0) Text('Terpakai ${AppFormat.rupiah(spent)}', style: context.text.bodySmall?.copyWith(color: c.inkMuted)),
                   ],
                 ),
               ),
@@ -312,12 +303,7 @@ class _BudgetSheetState extends State<_BudgetSheet> {
             Center(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: AmountText(
-                  _amount,
-                  size: AmountSize.display,
-                  color: _amount == 0 ? c.inkMuted : null,
-                  semanticsPrefix: 'Anggaran',
-                ),
+                child: AmountText(_amount, size: AmountSize.display, color: _amount == 0 ? c.inkMuted : null, semanticsPrefix: 'Anggaran'),
               ),
             ),
             const SizedBox(height: AppSpacing.s16),
