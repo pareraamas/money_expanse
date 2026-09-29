@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_surface">#FF101C24</color>
+    <color name="widget_surface_container">#FF1A2832</color>
+    <color name="widget_ink">#FFE8EDF0</color>
+    <color name="widget_ink_muted">#FF9AA6B2</color>
+    <color name="widget_brand">#FF4FD1C0</color>
+    <color name="widget_on_brand">#FF00332D</color>
+    <color name="widget_income">#FF4ADE80</color>
+    <color name="widget_income_container">#FF123D26</color>
+    <color name="widget_expense">#FFFF8A73</color>
+    <color name="widget_expense_container">#FF4A1E15</color>
+    <color name="widget_warning">#FFFBBF24</color>
+    <color name="widget_warning_fill">#FFFBBF24</color>
+    <color name="widget_danger">#FFFF8078</color>
+    <color name="widget_pace">#FF34444F</color>
+    <color name="widget_track">#FF1F2D37</color>
+</resources>

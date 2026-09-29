@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:wister_lite/app/ults/clock.dart';
 import 'package:wister_lite/app/data/models/category_model.dart';
+import 'package:wister_lite/app/data/services/home_widget_service.dart';
 import 'package:wister_lite/app/data/repositories/expense_repository.dart';
 
 class BudgetController extends GetxController {
@@ -93,5 +94,6 @@ class BudgetController extends GetxController {
       await _repository.setBudget(categoryId, selectedMonth.value, amount);
       budgetByCategory[categoryId] = amount;
     }
+    if (Get.isRegistered<HomeWidgetService>()) Get.find<HomeWidgetService>().update();
   }
 }

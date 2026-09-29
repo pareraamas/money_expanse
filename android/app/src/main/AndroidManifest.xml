@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Menjadwalkan ulang pembaruan widget tengah malam setelah HP dinyalakan ulang. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:label="Wister Lite"
         android:name="${applicationName}"
@@ -25,6 +28,50 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Widget home screen "Ringkasan" (lihat HomeWidgetService). -->
+        <receiver
+            android:name=".SummaryWidgetProvider"
+            android:exported="false"
+            android:label="Ringkasan Wister">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_summary_info" />
+        </receiver>
+        <!-- Widget home screen "Anggaran". -->
+        <receiver
+            android:name=".BudgetWidgetProvider"
+            android:exported="false"
+            android:label="Anggaran Wister">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_budget_info" />
+        </receiver>
+        <!-- Tile Quick Settings "Catat transaksi" (bisa diakses dari lock screen). -->
+        <service
+            android:name=".CatatTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_catat"
+            android:label="@string/tile_catat_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="es.antonborri.home_widget.HomeWidgetScheduledUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

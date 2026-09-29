@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_budget_description">Sisa anggaran bulan ini per kategori</string>
+    <string name="tile_catat_label">Catat transaksi</string>
+    <string name="widget_summary_description">Keluar hari ini, saldo, dan tombol catat cepat</string>
+
+    <!-- Token brand (lihat lib/app/theme/tokens). Widget tidak ikut dynamic color. -->
+    <color name="widget_surface">#FFFFFCF8</color>
+    <color name="widget_surface_container">#FFF8F4EE</color>
+    <color name="widget_ink">#FF1B2430</color>
+    <color name="widget_ink_muted">#FF5B6573</color>
+    <color name="widget_brand">#FF0C7066</color>
+    <color name="widget_on_brand">#FFFFFFFF</color>
+    <color name="widget_income">#FF167342</color>
+    <color name="widget_income_container">#FFDCF3E5</color>
+    <color name="widget_expense">#FFB6371D</color>
+    <color name="widget_expense_container">#FFFDE7E1</color>
+
+    <color name="widget_warning">#FF8E5700</color>
+    <color name="widget_warning_fill">#FFE08A00</color>
+    <color name="widget_danger">#FFB42318</color>
+    <color name="widget_pace">#FFE4DED5</color>
+    <color name="widget_track">#FFF3EEE7</color>
+
+    <dimen name="widget_radius">20dp</dimen>
+    <dimen name="widget_inner_radius">12dp</dimen>
+</resources>

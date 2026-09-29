@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 3×1: keluar hari ini + tombol catat pengeluaran/pemasukan. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="10dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="Keluar hari ini"
+            android:textColor="@color/widget_ink_muted"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/today_expense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Rp 0"
+            android:textColor="@color/widget_ink"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/add_expense"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/widget_button_expense"
+        android:contentDescription="Catat pengeluaran"
+        android:padding="9dp"
+        android:src="@drawable/ic_widget_minus" />
+
+    <ImageView
+        android:id="@+id/add_income"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/widget_button_income"
+        android:contentDescription="Catat pemasukan"
+        android:padding="9dp"
+        android:src="@drawable/ic_widget_plus" />
+</LinearLayout>

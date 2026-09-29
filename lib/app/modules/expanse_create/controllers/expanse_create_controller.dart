@@ -72,6 +72,8 @@ class ExpanseCreateController extends GetxController {
   void onInit() {
     super.onInit();
     nameController = TextEditingController();
+    // Tombol − / + di widget home screen memilih tipe transaksi.
+    if (Get.parameters['type'] == 'income') transactionType.value = 'income';
     _loadCategories();
   }
 

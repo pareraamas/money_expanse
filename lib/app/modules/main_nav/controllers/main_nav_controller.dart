@@ -1,5 +1,6 @@
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:wister_lite/app/data/services/home_widget_service.dart';
 import 'package:wister_lite/app/modules/budget/controllers/budget_controller.dart';
 import 'package:wister_lite/app/modules/home/controllers/home_controller.dart';
 import 'package:wister_lite/app/modules/statistik/controllers/statistik_controller.dart';
@@ -19,6 +20,12 @@ class MainNavController extends GetxController {
     } else if (direction == ScrollDirection.reverse) {
       fabVisible.value = false;
     }
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    if (Get.isRegistered<HomeWidgetService>()) Get.find<HomeWidgetService>().handleInitialLaunch();
   }
 
   void changeTab(int index) {
@@ -42,5 +49,6 @@ class MainNavController extends GetxController {
     if (Get.isRegistered<BudgetController>()) Get.find<BudgetController>().loadData();
     if (Get.isRegistered<StatistikController>()) Get.find<StatistikController>().loadData();
     if (Get.isRegistered<TransactionHistoryController>()) Get.find<TransactionHistoryController>().reload();
+    if (Get.isRegistered<HomeWidgetService>()) Get.find<HomeWidgetService>().update();
   }
 }
